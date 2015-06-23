@@ -94,7 +94,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cow\cow.core.csproj">
+    <ProjectReference Include="..\cow.core\cow.core.csproj">
       <Project>{f55aa3c8-ae24-4d8d-8f2e-286c139d3bc8}</Project>
       <Name>cow.core</Name>
     </ProjectReference>
