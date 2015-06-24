@@ -7,12 +7,13 @@
     <ProjectGuid>{4623407E-29AD-485A-B607-C26A61FFEA90}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>cow.test</RootNamespace>
-    <AssemblyName>cow.test</AssemblyName>
+    <RootNamespace>Cow.Net.test</RootNamespace>
+    <AssemblyName>Cow.Net.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
+    <NuGetPackageImportStamp>4aaf785b</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -94,9 +95,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\cow.core\cow.core.csproj">
+    <ProjectReference Include="..\Cow.Net.Core\Cow.Net.Core.csproj">
       <Project>{f55aa3c8-ae24-4d8d-8f2e-286c139d3bc8}</Project>
-      <Name>cow.core</Name>
+      <Name>Cow.Net.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cow.Net.SQLiteStorageProvider.Core\Cow.Net.SQLiteStorageProvider.Core.csproj">
+      <Project>{796960EC-4E54-4E36-83B4-C62A3DEB7777}</Project>
+      <Name>Cow.Net.SQLiteStorageProvider.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Cow.Net.SQLiteStorageProvider.Net45\Cow.Net.SQLiteStorageProvider.Net45.csproj">
+      <Project>{624760b4-c672-4b8f-805f-b2daef85e2c3}</Project>
+      <Name>Cow.Net.SQLiteStorageProvider.Net45</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

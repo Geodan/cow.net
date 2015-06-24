@@ -1,10 +1,11 @@
-﻿namespace cow.core.Models
+﻿namespace Cow.Net.Core.Models
 {
     public enum Action
     {
         connected,        
         peerGone,
         newList,
+        missingRecords,
         Unknown
     }
 }

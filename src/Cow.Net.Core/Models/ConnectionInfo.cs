@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 using cow.core.Annotations;
 using Newtonsoft.Json;
 
-namespace cow.core.Models
+namespace Cow.Net.Core.Models
 {
     public class ConnectionInfo : INotifyPropertyChanged
     {

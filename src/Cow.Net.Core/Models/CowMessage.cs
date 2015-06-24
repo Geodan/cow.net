@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace cow.core.Models
+namespace Cow.Net.Core.Models
 {
     public class CowMessage<T>
     {
@@ -9,6 +9,9 @@ namespace cow.core.Models
 
         [JsonProperty("sender")]
         public string Sender { get; set; }
+
+        [JsonProperty("target")]
+        public string Target { get; set; }
 
         [JsonProperty("payload")]
         public T Payload { get; set; }

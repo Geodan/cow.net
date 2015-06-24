@@ -3,9 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cow.test", "cow.test\cow.test.csproj", "{4623407E-29AD-485A-B607-C26A61FFEA90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cow.Net.Core", "Cow.Net.Core\Cow.Net.Core.csproj", "{F55AA3C8-AE24-4D8D-8F2E-286C139D3BC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cow.core", "cow.core\cow.core.csproj", "{F55AA3C8-AE24-4D8D-8F2E-286C139D3BC8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cow.Net.Test", "Cow.Net.Test\Cow.Net.Test.csproj", "{4623407E-29AD-485A-B607-C26A61FFEA90}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cow.Net.SQLiteStorageProvider.Net45", "Cow.Net.SQLiteStorageProvider.Net45\Cow.Net.SQLiteStorageProvider.Net45.csproj", "{624760B4-C672-4B8F-805F-B2DAEF85E2C3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Storage", "Storage", "{34BDB477-CC4A-4ABF-B84A-A40D8F981664}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{781AA051-03CD-4A4D-9398-C695596DA153}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cow.Net.SQLiteStorageProvider.Core", "Cow.Net.SQLiteStorageProvider.Core\Cow.Net.SQLiteStorageProvider.Core.csproj", "{796960EC-4E54-4E36-83B4-C62A3DEB7777}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,16 +21,29 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4623407E-29AD-485A-B607-C26A61FFEA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4623407E-29AD-485A-B607-C26A61FFEA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4623407E-29AD-485A-B607-C26A61FFEA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4623407E-29AD-485A-B607-C26A61FFEA90}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F55AA3C8-AE24-4D8D-8F2E-286C139D3BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F55AA3C8-AE24-4D8D-8F2E-286C139D3BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F55AA3C8-AE24-4D8D-8F2E-286C139D3BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F55AA3C8-AE24-4D8D-8F2E-286C139D3BC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4623407E-29AD-485A-B607-C26A61FFEA90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4623407E-29AD-485A-B607-C26A61FFEA90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4623407E-29AD-485A-B607-C26A61FFEA90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4623407E-29AD-485A-B607-C26A61FFEA90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{624760B4-C672-4B8F-805F-B2DAEF85E2C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{624760B4-C672-4B8F-805F-B2DAEF85E2C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{624760B4-C672-4B8F-805F-B2DAEF85E2C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{624760B4-C672-4B8F-805F-B2DAEF85E2C3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{796960EC-4E54-4E36-83B4-C62A3DEB7777}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{796960EC-4E54-4E36-83B4-C62A3DEB7777}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{796960EC-4E54-4E36-83B4-C62A3DEB7777}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{796960EC-4E54-4E36-83B4-C62A3DEB7777}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{624760B4-C672-4B8F-805F-B2DAEF85E2C3} = {781AA051-03CD-4A4D-9398-C695596DA153}
+		{781AA051-03CD-4A4D-9398-C695596DA153} = {34BDB477-CC4A-4ABF-B84A-A40D8F981664}
+		{796960EC-4E54-4E36-83B4-C62A3DEB7777} = {781AA051-03CD-4A4D-9398-C695596DA153}
 	EndGlobalSection
 EndGlobal
