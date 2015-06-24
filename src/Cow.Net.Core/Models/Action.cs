@@ -4,8 +4,11 @@
     {
         connected,        
         peerGone,
-        newList,
+        newList,        
+        syncinfo,
+        wantedList,
         missingRecords,
+        updatedRecord,
         Unknown
     }
 }

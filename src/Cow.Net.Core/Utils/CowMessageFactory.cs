@@ -9,18 +9,19 @@ namespace Cow.Net.Core.Utils
         /// Create a CowMessage for syncing peers, alwways send an empty list
         /// </summary>
         /// <param name="connectionInfo">connection info received from websocket</param>
-        /// <param name="peers">peers to send</param>
+        /// <param name="syncType"></param>
+        /// <param name="storeObjects"></param>
         /// <returns></returns>
-        public static CowMessage<NewList<List<Peer>>> CreatePeersMessage(ConnectionInfo connectionInfo, List<Peer> peers)
+        public static CowMessage<NewList> CreateSyncMessage(ConnectionInfo connectionInfo, SyncType syncType, List<StoreObject> storeObjects)
         {
-            return new CowMessage<NewList<List<Peer>>>
+            return new CowMessage<NewList>
             {
                 Action = Action.newList,
                 Sender = connectionInfo.PeerId,
-                Payload = new NewList<List<Peer>>
+                Payload = new NewList
                 {
-                    SyncType = SyncType.peers,
-                    List = peers
+                    SyncType = syncType,
+                    List = storeObjects
                 }
             };
         }

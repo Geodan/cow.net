@@ -17,12 +17,12 @@ namespace Cow.Net.test
             _client.CowConnectionError += ClientCowConnectionError;
             _client.Peers.CollectionChanged += PeersCollectionChanged;
 
-           // _client.Connect();
+            _client.Connect();
         }
 
         private void ClientCowConnected(object sender)
         {
-            throw new NotImplementedException();
+            
         }
 
         private void ClientCowConnectionError(object sender, string error)

@@ -5,7 +5,7 @@ namespace Cow.Net.Core.Utils
     public class CowEventHandlers
     {
         //Connection
-        public delegate void ConnectedHandler(object sender, ConnectionInfo connectionInfo);
+        public delegate void ConnectedHandler(object sender);
         public delegate void ConnectionErrorHandler(object sender, string error);
         public delegate void ConnectionClosedHandler(object sender);
 

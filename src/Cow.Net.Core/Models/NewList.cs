@@ -1,14 +1,15 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
 {
-    public class NewList<T>
+    public class NewList
     {
         [JsonProperty("syncType")]
         public SyncType SyncType { get; set; }
 
         [JsonProperty("list")]
-        public T List { get; set; }
+        public List<StoreObject> List { get; set; }
 
         [JsonProperty("project")]
         public string Project { get; set; }

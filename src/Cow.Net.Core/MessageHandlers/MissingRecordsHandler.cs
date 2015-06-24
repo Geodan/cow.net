@@ -1,33 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using Cow.Net.Core.Models;
+﻿using Cow.Net.Core.Models;
 using Newtonsoft.Json;
 
 namespace Cow.Net.Core.MessageHandlers
 {
     public class MissingRecordsHandler
     {
-        public static void Handle(string message, ObservableCollection<Peer> peers)
+        public static void Handle(string message, ObservableCowCollection<StoreObject> peers)
         {
-            var missingRecords = JsonConvert.DeserializeObject<CowMessage<NewList<object>>>(message);
+            var missingRecords = JsonConvert.DeserializeObject<CowMessage<NewList>>(message);
             switch (missingRecords.Payload.SyncType)
             {
                 case SyncType.peers:
-                    HandleMissingPeers(missingRecords, peers);
+                    peers.AddRange(missingRecords.Payload.List);
                     break;
-            }
-        }
-
-        private static void HandleMissingPeers(CowMessage<NewList<object>> missingRecords, ObservableCollection<Peer> peers)
-        {
-            var newPeers = JsonConvert.DeserializeObject<List<Peer>>(missingRecords.Payload.List.ToString());
-            if (newPeers.Any() && peers == null)
-                peers = new ObservableCollection<Peer>();
-
-            foreach (var peer in newPeers)
-            {
-                peers.Add(peer);
             }
         }
     }

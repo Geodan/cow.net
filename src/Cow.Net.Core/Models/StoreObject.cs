@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
 {
-    public class Peer
+    public class StoreObject
     {        
         [JsonProperty("_id")]
         public string Id { get; set; }
@@ -24,9 +23,9 @@ namespace Cow.Net.Core.Models
         public long Updated { get; set; }
 
         [JsonProperty("data")]
-        public Dictionary<string, object> Data { get; set; }
+        public object Data { get; set; }
 
         [JsonProperty("deltas")]
-        public Peer[] Deltas { get; set; }
+        public Delta[] Deltas { get; set; }
     }
 }

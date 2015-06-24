@@ -41,13 +41,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CowClient.cs" />
+    <Compile Include="MessageHandlers\UpdatedRecordsHandler.cs" />
+    <Compile Include="Models\Delta.cs" />
+    <Compile Include="Utils\CowEventHandlers.cs" />
     <Compile Include="MessageHandlers\ConnectedHandler.cs" />
     <Compile Include="MessageHandlers\MissingRecordsHandler.cs" />
     <Compile Include="Models\Action.cs" />
     <Compile Include="Models\ConnectionInfo.cs" />
     <Compile Include="Models\CowMessage.cs" />
     <Compile Include="Models\NewList.cs" />
-    <Compile Include="Models\Peer.cs" />
+    <Compile Include="Models\StoreObject.cs" />
     <Compile Include="Models\SyncType.cs" />
     <Compile Include="ObservableCowCollection.cs" />
     <Compile Include="Properties\Annotations.cs" />

@@ -6,7 +6,7 @@ namespace Cow.Net.Core.Storage
     public interface IStorageProvider
     {
         bool PrepareDatabase();
-        List<Peer> GetPeers();        
-        void AddPeers(List<Peer> peers);
+        List<StoreObject> GetPeers();        
+        void AddPeers(List<StoreObject> peers);
     }
 }

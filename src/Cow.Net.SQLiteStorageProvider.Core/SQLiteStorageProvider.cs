@@ -23,12 +23,13 @@ namespace Cow.Net.SQLiteStorageProvider.Core
             return DatabaseCreation.Create(_dbLocation);
         }
 
-        public List<Peer> GetPeers()
+        public List<StoreObject> GetPeers()
         {
-            return new List<Peer>();
+            return new List<StoreObject>();
         }
 
-        public void AddPeers(List<Peer> peers)
+        //Not needed
+        public void AddPeers(List<StoreObject> peers)
         {
 
         }

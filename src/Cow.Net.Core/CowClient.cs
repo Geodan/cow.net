@@ -26,7 +26,11 @@ namespace Cow.Net.Core
         public event CowEventHandlers.SyncStartedHandler CowSyncStarted;
         public event CowEventHandlers.SyncFinishedHandler CowSyncFinished;
 
-        public ObservableCowCollection<Peer> Peers { get; private set; }
+        public ObservableCowCollection<StoreObject> Peers { get; private set; }
+        public ObservableCowCollection<StoreObject> Projects { get; private set; }
+        public ObservableCowCollection<StoreObject> SocketServers { get; private set; }
+        public ObservableCowCollection<StoreObject> Items { get; private set; }
+        public ObservableCowCollection<StoreObject> Groups { get; private set; }
 
         private IStorageProvider _storageProvider;
         private WebSocketSharp.WebSocket _socketClient;
@@ -74,7 +78,11 @@ namespace Cow.Net.Core
 
         private void SetupCollections()
         {
-            Peers = new ObservableCowCollection<Peer>();
+            Peers = new ObservableCowCollection<StoreObject>();
+            Projects = new ObservableCowCollection<StoreObject>();
+            SocketServers = new ObservableCowCollection<StoreObject>();
+            Items = new ObservableCowCollection<StoreObject>();
+            Groups = new ObservableCowCollection<StoreObject>();
         }
 
         private void SetupDatabase(IStorageProvider storageProvider)
@@ -117,20 +125,11 @@ namespace Cow.Net.Core
             var serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
             serializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
 
-            //Test sending projects
-            var projectMessage = new CowMessage<NewList<List<string>>>
-            {
-                Action = Action.newList,
-                Sender = ConnectionInfo.PeerId,
-                Payload = new NewList<List<string>>
-                {
-                    SyncType = SyncType.projects,
-                    List = new List<string>()
-                }
-            };
-
-            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreatePeersMessage(ConnectionInfo, Peers.ToList()), Formatting.None, serializerSettings));
-            _socketClient.Send(JsonConvert.SerializeObject(projectMessage, Formatting.None, serializerSettings));
+            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.peers, Peers.ToList()), Formatting.None, serializerSettings));
+            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, Projects.ToList()), Formatting.None, serializerSettings));
+            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, SocketServers.ToList()), Formatting.None, serializerSettings));
+            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, Items.ToList()), Formatting.None, serializerSettings));
+            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, Groups.ToList()), Formatting.None, serializerSettings));
         }
 
         private void HandleReceivedMessage(string message)
