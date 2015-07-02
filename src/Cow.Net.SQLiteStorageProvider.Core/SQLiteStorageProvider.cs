@@ -18,18 +18,22 @@ namespace Cow.Net.SQLiteStorageProvider.Core
             _dbLocation = dbLocation;
         }
 
-        public bool PrepareDatabase()
+        public bool PrepareDatabase(List<string> stores)
         {
-            return DatabaseCreation.Create(_dbLocation);
+            return DatabaseCreation.Create(_dbLocation, stores);
         }
 
-        public List<StoreObject> GetPeers()
+        public List<StoreRecord> GetStoreObjects()
         {
-            return new List<StoreObject>();
+            return null;
         }
 
-        //Not needed
-        public void AddPeers(List<StoreObject> peers)
+        public void AddStoreObject(List<StoreRecord> peers)
+        {
+            
+        }
+
+        public void UpdateStoreObject(List<StoreRecord> peers)
         {
 
         }

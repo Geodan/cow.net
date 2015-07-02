@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Cow.Net.Core.Models;
 
 namespace Cow.Net.Core.Utils
@@ -6,23 +7,37 @@ namespace Cow.Net.Core.Utils
     public class CowMessageFactory
     {
         /// <summary>
-        /// Create a CowMessage for syncing peers, alwways send an empty list
+        /// 
         /// </summary>
         /// <param name="connectionInfo">connection info received from websocket</param>
         /// <param name="syncType"></param>
         /// <param name="storeObjects"></param>
         /// <returns></returns>
-        public static CowMessage<NewList> CreateSyncMessage(ConnectionInfo connectionInfo, SyncType syncType, List<StoreObject> storeObjects)
+        public static CowMessage<Dictionary<string, object>> CreateSyncMessage(ConnectionInfo connectionInfo, string syncType, IEnumerable<StoreRecord> storeObjects, string projectId = null)
         {
-            return new CowMessage<NewList>
+            var sendList = storeObjects.Select(storeObject => new Dictionary<string, object>
+            {
+                {"_id", storeObject.Id}, 
+                {"timestamp", storeObject.Updated}, 
+                {"deleted", storeObject.Deleted},                
+            }).ToList();
+
+            var payload = new Dictionary<string, object>
+            {
+                {"syncType", syncType},
+                {"list", sendList}
+            };
+
+            if (!string.IsNullOrEmpty(projectId))
+            {
+                payload.Add("project", projectId);
+            }
+
+            return new CowMessage<Dictionary<string, object>>
             {
                 Action = Action.newList,
                 Sender = connectionInfo.PeerId,
-                Payload = new NewList
-                {
-                    SyncType = syncType,
-                    List = storeObjects
-                }
+                Payload = payload
             };
         }
     }

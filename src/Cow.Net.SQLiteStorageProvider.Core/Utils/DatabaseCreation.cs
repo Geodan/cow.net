@@ -1,17 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using SQLitePCL;
 
 namespace Cow.Net.SQLiteStorageProvider.Core.Utils
 {
     public class DatabaseCreation
     {
-        public static bool Create(string dbLocation)
+        public static bool Create(string dbLocation, List<string> stores)
         {
             try
             {
                 using (var connection = new SQLiteConnection(dbLocation))
-                {                    
-                    foreach (var store in Constants.GetStores())
+                {
+                    foreach (var store in stores)
                     {
                         using (var statement = connection.Prepare(GetTableCreationSql(store)))
                         {

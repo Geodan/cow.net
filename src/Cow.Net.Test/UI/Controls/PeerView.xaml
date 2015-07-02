@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Cow.Net.test.UI.Controls.PeerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <!-- You can implement your own BooleanToVisibilityConverter but there is one already implemented. So the next line creates an instance of the BooleanToVisibilityConverter that you will be able to reference with the specified key -->
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    <StackPanel>
+        <TextBlock Text="PEERS" Foreground="Black"></TextBlock>
+        <ListView Margin="5" Name="PeersList" ItemsSource="{Binding Path=Peers.Records}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <WrapPanel>
+                        <TextBlock Text="{Binding Path=Id}" FontWeight="Bold" Foreground="Black" Visibility="{Binding Path=Deleted, Converter={StaticResource BooleanToVisibilityConverter} }"/>
+                    </WrapPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackPanel>
+</UserControl>

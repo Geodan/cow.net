@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using cow.core.Annotations;
+using Cow.Net.Core.Config;
 using Cow.Net.Core.MessageHandlers;
 using Cow.Net.Core.Models;
 using Cow.Net.Core.Storage;
@@ -23,19 +23,11 @@ namespace Cow.Net.Core
         public event CowEventHandlers.ConnectionErrorHandler CowConnectionError;
         public event CowEventHandlers.ConnectionClosedHandler CowDisconnected;
         public event CowEventHandlers.DatabaseErrorHandler CowDatabaseError;
-        public event CowEventHandlers.SyncStartedHandler CowSyncStarted;
-        public event CowEventHandlers.SyncFinishedHandler CowSyncFinished;
 
-        public ObservableCowCollection<StoreObject> Peers { get; private set; }
-        public ObservableCowCollection<StoreObject> Projects { get; private set; }
-        public ObservableCowCollection<StoreObject> SocketServers { get; private set; }
-        public ObservableCowCollection<StoreObject> Items { get; private set; }
-        public ObservableCowCollection<StoreObject> Groups { get; private set; }
-
-        private IStorageProvider _storageProvider;
+        public ICowClientConfig Config { get; private set; }
+        
         private WebSocketSharp.WebSocket _socketClient;
-        private bool _localStorageAvailable;
-
+        private bool _localStorageAvailable;        
         private ConnectionInfo _connectionInfo;                      
 
         public ConnectionInfo ConnectionInfo
@@ -48,15 +40,12 @@ namespace Cow.Net.Core
             }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="storageProvider"></param>
-        /// <param name="address"></param>
-        /// <param name="protocols"></param>
-        public CowClient(IStorageProvider storageProvider, string address, string[] protocols = null)
+        public CowClient(ICowClientConfig config)
         {
-            Initialize(storageProvider, address, protocols);
+            Config = config;
+            CoreSettings.Instance.SynchronizationContext = Config.SynchronizationContext;
+
+            Initialize(Config.StorageProvider, Config.Address);
         }
 
         public void Connect()
@@ -69,26 +58,27 @@ namespace Cow.Net.Core
             _socketClient.CloseAsync();
         }
 
-        private void Initialize(IStorageProvider storageProvider, string address, string[] protocols)
+        private void Initialize(IStorageProvider storageProvider, string address)
         {
-            SetupCollections();
             SetupDatabase(storageProvider);
-            SetupSocketClient(address, protocols);
+            SetupSocketClient(address, null);
         }
 
-        private void SetupCollections()
-        {
-            Peers = new ObservableCowCollection<StoreObject>();
-            Projects = new ObservableCowCollection<StoreObject>();
-            SocketServers = new ObservableCowCollection<StoreObject>();
-            Items = new ObservableCowCollection<StoreObject>();
-            Groups = new ObservableCowCollection<StoreObject>();
-        }
+        //private void ProjectsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        //{
+        //    if (e.NewItems == null)
+        //        return;
 
+        //    foreach (Project item in e.NewItems)
+        //    {
+        //        _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.items, item.Items.ToList()), Formatting.None, _serializerSettings));
+        //        _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.groups, item.Groups.ToList()), Formatting.None, _serializerSettings));
+        //    }
+        //}
+         
         private void SetupDatabase(IStorageProvider storageProvider)
         {
-            _storageProvider = storageProvider;
-            _localStorageAvailable = _storageProvider.PrepareDatabase();
+            _localStorageAvailable = storageProvider.PrepareDatabase(Config.CowStoreManager.GetStoreIds(false));
             if (!_localStorageAvailable)
             {
                 OnCowDatabaseError("Unable to start database");
@@ -106,10 +96,8 @@ namespace Cow.Net.Core
 
         private async void Sync()
         {
-            OnCowSyncStarted();
             LoadFromStorage();
-            SyncWithPeers();
-            OnCowSyncFinished();
+            SyncStoreWithPeers();
         }
 
         private void LoadFromStorage()
@@ -117,19 +105,15 @@ namespace Cow.Net.Core
             if (!_localStorageAvailable)
                 return;
 
-            Peers.AddRange(_storageProvider.GetPeers());
+            //Peers.AddItems(_storageProvider.GetPeers());
         }
 
-        private void SyncWithPeers()
+        private void SyncStoreWithPeers()
         {
-            var serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore };
-            serializerSettings.Converters.Add(new StringEnumConverter { CamelCaseText = true });
-
-            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.peers, Peers.ToList()), Formatting.None, serializerSettings));
-            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, Projects.ToList()), Formatting.None, serializerSettings));
-            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, SocketServers.ToList()), Formatting.None, serializerSettings));
-            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, Items.ToList()), Formatting.None, serializerSettings));
-            _socketClient.Send(JsonConvert.SerializeObject(CowMessageFactory.CreateSyncMessage(ConnectionInfo, SyncType.projects, Groups.ToList()), Formatting.None, serializerSettings));
+            foreach (var store in Config.CowStoreManager.Stores)
+            {
+                store.Sync(_socketClient, ConnectionInfo);   
+            }
         }
 
         private void HandleReceivedMessage(string message)
@@ -150,9 +134,19 @@ namespace Cow.Net.Core
                     Sync();
                     break;
                 case Action.missingRecords:
-                    MissingRecordsHandler.Handle(message, Peers);
+                    MissingRecordsHandler.Handle(_socketClient, ConnectionInfo, message, Config.CowStoreManager);
                     break;
-            }                       
+                case Action.syncinfo: //What is going to sync                    
+                    break;
+                case Action.updatedRecord:
+                    UpdatedRecordsHandler.Handle(message, Config.CowStoreManager);
+                    break;
+                case Action.wantedList: //List of items to broadcast
+                    break;
+                case Action.peerGone:
+                    //PeerGonehandler.Handle(message, Peers);
+                    break;
+            }
         }
 
         #region websocket 
@@ -186,18 +180,6 @@ namespace Cow.Net.Core
         {
             var handler = CowDatabaseError;
             if (handler != null) handler(this, error);
-        }
-
-        private void OnCowSyncStarted()
-        {
-            var handler = CowSyncStarted;
-            if (handler != null) handler(this);
-        }
-
-        private void OnCowSyncFinished()
-        {
-            var handler = CowSyncFinished;
-            if (handler != null) handler(this);
         }
 
         [NotifyPropertyChangedInvocator]

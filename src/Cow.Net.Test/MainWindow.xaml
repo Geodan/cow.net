@@ -1,8 +1,10 @@
 ﻿<Window x:Class="Cow.Net.test.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:Cow.Net.test.UI.Controls"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        
+        <controls:PeerView x:Name="PeerView"></controls:PeerView>
+        <Button Height="20" Click="ButtonBase_OnClick"></Button>
     </Grid>
 </Window>

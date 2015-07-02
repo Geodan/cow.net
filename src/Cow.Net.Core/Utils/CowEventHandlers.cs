@@ -1,4 +1,5 @@
-﻿using Cow.Net.Core.Models;
+﻿using System.Collections.Generic;
+using Cow.Net.Core.Models;
 
 namespace Cow.Net.Core.Utils
 {
@@ -9,12 +10,13 @@ namespace Cow.Net.Core.Utils
         public delegate void ConnectionErrorHandler(object sender, string error);
         public delegate void ConnectionClosedHandler(object sender);
 
-        //Syncing
-        public delegate void SyncStartedHandler(object sender);
-        public delegate void SyncFinishedHandler(object sender);
-        public delegate void SyncFailedHandler(object sender, string error);
-
         //Store
         public delegate void DatabaseErrorHandler(object sender, string error);
+        public delegate void StoreSyncedHandler(object sender);
+
+        //Collection
+        public delegate void RecordCollectionChanged(
+            object sender, List<StoreRecord> newRecords, List<StoreRecord> deletedRecords,
+            List<StoreRecord> unchangedRecords, string key);
     }
 }
