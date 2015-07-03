@@ -40,5 +40,33 @@ namespace Cow.Net.Core.Utils
                 Payload = payload
             };
         }
+
+        public static CowMessage<Dictionary<string, object>> CreateUpdateMessage(ConnectionInfo connectionInfo, string syncType, StoreRecord record)
+        {
+            var recordInfo = new Dictionary<string, object>
+            {
+                {"_id", record.Id}, 
+                {"timestamp", record.Updated}, 
+                {"deleted", record.Deleted},
+            };
+
+            var payload = new Dictionary<string, object>
+            {
+                {"syncType", syncType},
+                {"record", recordInfo}
+            };
+
+            if (!string.IsNullOrEmpty(record.Identifier))
+            {
+                payload.Add("project", record.Identifier);
+            }
+
+            return new CowMessage<Dictionary<string, object>>
+            {
+                Action = Action.updatedRecord,
+                Sender = connectionInfo.PeerId,
+                Payload = payload
+            };
+        }
     }
 }

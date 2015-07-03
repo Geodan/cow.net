@@ -54,6 +54,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="UI\Controls\ConnectionInfoView.xaml.cs">
+      <DependentUpon>ConnectionInfoView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\PeerView.xaml.cs">
       <DependentUpon>PeerView.xaml</DependentUpon>
     </Compile>
@@ -69,6 +72,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UI\Controls\ConnectionInfoView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\PeerView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

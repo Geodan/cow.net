@@ -6,12 +6,15 @@ namespace Cow.Net.Core.MessageHandlers
 {
     public class PeerGonehandler
     {
-        public static void Handle(string message, CowStore peers)
+        public static void Handle(string message, CowStoreManager storeManager)
         {
             var peerGone = JsonConvert.DeserializeObject<CowMessage<PeerGone>>(message);
-            foreach (var storeObject in peers.Records.Where(storeObject => storeObject.Id.Equals(peerGone.Payload.GonePeerId)))
+            var peerStore = storeManager.GetPeerStore();
+
+            foreach (var storeObject in peerStore.Records.Where(storeObject => storeObject.Id.Equals(peerGone.Payload.GonePeerId)))
             {
-                peers.Remove(storeObject);
+                //ToDo: needs to be removed from the list or just set to deleted?
+                peerStore.Remove(storeObject);
                 break;
             }
         }

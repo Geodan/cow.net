@@ -20,6 +20,7 @@ namespace Cow.Net.Core.Models
         }
 
         private string _id;
+        private string _identifier;
         private string _status;
         private bool _dirty;
         private long _created;
@@ -35,6 +36,17 @@ namespace Cow.Net.Core.Models
             set
             {
                 _id = value;
+                OnPropertyChanged();
+            }
+        }
+
+        [JsonIgnore]
+        public string Identifier
+        {
+            get { return _identifier; }
+            set
+            {
+                _identifier = value;
                 OnPropertyChanged();
             }
         }
@@ -114,6 +126,17 @@ namespace Cow.Net.Core.Models
                 _deltas = value;
                 OnPropertyChanged();
             }
+        }
+
+        internal void Update(StoreRecord record)
+        {
+            record.Created = record.Created;
+            record.Data = record.Data;
+            record.Deleted = record.Deleted;
+            record.Deltas = record.Deltas;
+            record.Dirty = record.Dirty;
+            record.Status = record.Status;
+            record.Updated = record.Updated;            
         }
 
         internal void AddSubRecordList(string id)

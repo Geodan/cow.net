@@ -26,7 +26,7 @@ namespace Cow.Net.Core.Config
 
         private void SetupStores()
         {
-            Peers = new CowStore("peers", null, false);
+            Peers = new CowStore("peers", null, false, true);
             Users = new CowStore("users");
             SocketServers = new CowStore("socketservers");
             Projects = new CowStore("projects", new List<CowStore>

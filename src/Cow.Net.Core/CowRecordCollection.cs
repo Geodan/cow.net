@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Cow.Net.Core.Annotations;
@@ -25,12 +24,12 @@ namespace Cow.Net.Core
             get { return new ReadOnlyCollection<StoreRecord>(_records); }
         }
 
-        public void Add(StoreRecord record, string key = null)
+        internal void Add(StoreRecord record, string key = null)
         {
             AddRange(new List<StoreRecord>{record}, key);
         }
 
-        public void AddRange(List<StoreRecord> records, string key = null)
+        internal void AddRange(List<StoreRecord> records, string key = null)
         {
             var temp = _records;
             if (records == null)
@@ -40,12 +39,12 @@ namespace Cow.Net.Core
             OnCollectionChanged(records, new List<StoreRecord>(), temp, key);
         }
 
-        public void Remove(StoreRecord record, string key = null)
+        internal void Remove(StoreRecord record, string key = null)
         {
             RemoveRange(new List<StoreRecord> { record });
         }
 
-        public void RemoveRange(List<StoreRecord> records, string key = null)
+        internal void RemoveRange(List<StoreRecord> records, string key = null)
         {
             if (records == null)
                 records = new List<StoreRecord>();

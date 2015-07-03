@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Cow.Net.Core.Models;
 using Cow.Net.Core.Utils;
-using Newtonsoft.Json;
 using WebSocketSharp;
 
 namespace Cow.Net.Core
@@ -11,14 +10,17 @@ namespace Cow.Net.Core
     public class CowStore : CowRecordCollection
     {
         public event CowEventHandlers.StoreSyncedHandler StoreSynced;
-        
+        public event CowEventHandlers.StoreSyncRequestedHandler SyncRequested;
+        public event CowEventHandlers.StoreUpdateRecordRequestedHandler UpdateRecordRequested;        
+
         public string Id { get; private set; }
+        public bool IsPeerStore { get; private set; }
         public bool IsSubStore { get; private set; }
         public List<CowStore> SubStores { get; private set; }
         public bool SaveToLocalDatabase { get; private set; }
 
         private int _subSyncsNeeded;
-        private int _subSyncCount;
+        private int _subSyncCount;        
 
         /// <summary>
         /// Create a new CowStore
@@ -26,29 +28,39 @@ namespace Cow.Net.Core
         /// <param name="id">id of the store, relates to database table and cow synctype response</param>
         /// <param name="subStores">List of substores for this Store i.e. Project substores -> Item, Groups </param>
         /// <param name="saveToLocalDatabase">Default true = create table and save and laod from local storage</param>
-        public CowStore(string id, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true)
+        /// <param name="isPeerStore">Indicator if this is the peer store, needed for some underlying Logic</param>
+        public CowStore(string id, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true, bool isPeerStore = false)
         {
             Id = id;
             SaveToLocalDatabase = saveToLocalDatabase;
+            IsPeerStore = isPeerStore;
 
             if (subStores == null) return;
             foreach (var store in subStores)
-            {
+            {                
                 AddSubStore(store);
             }
         }
 
-        public void Sync(WebSocket socket, ConnectionInfo connectionInfo, string identifier = null)
+        public void AddOrUpdateRecord(StoreRecord record)
         {
-            var jsonString = JsonSerialize(CowMessageFactory.CreateSyncMessage(connectionInfo, Id, Records, identifier));
-            socket.Send(jsonString);   
+            //Add to memory
+            Add(record);
+                        
+            //Add to database
+
+            //Send Update to other peers
+            OnUpdateRecordRequested(record);
         }
 
-        private string JsonSerialize(CowMessage<Dictionary<string, object>> message)
+        internal void Sync(string identifier = null)
         {
-            return JsonConvert.SerializeObject(message, Formatting.None, CoreSettings.Instance.SerializerSettings);
+            OnSyncRequested(identifier); 
         }
 
+        /// <summary>
+        /// Missing records after syncing with peers
+        /// </summary>
         internal void HandleMissingRecords(WebSocket socket, ConnectionInfo connectionInfo, CowMessage<NewList> missingRecords)
         {
             //Add subrecord lists to a record if this store contains any substores
@@ -73,7 +85,7 @@ namespace Cow.Net.Core
                 {
                     foreach (var subStore in SubStores)
                     {
-                        subStore.Sync(socket, connectionInfo, record.Id);
+                        subStore.Sync(record.Id);
                     }
                 }
             }
@@ -83,9 +95,25 @@ namespace Cow.Net.Core
             }
         }
 
-        public void LoadFromLocal()
+        /// <summary>
+        /// A record got updated by a peer, update in memory and local storage
+        /// </summary>        
+        internal void HandleUpdatedRecord(CowMessage<UpdatedRecord> updatedRecord)
         {
-            
+            var recordFromMemory = Records.FirstOrDefault(r => r.Id.Equals(updatedRecord.Payload.Record.Id));
+            if (recordFromMemory != null)
+            {
+                recordFromMemory.Update(updatedRecord.Payload.Record);
+            }
+            else
+            {
+                Add(updatedRecord.Payload.Record, updatedRecord.Payload.Project);
+            }
+        }
+
+        internal void LoadFromLocal()
+        {
+            //ToDo: Load from local database
         }
 
         private void AddSubStore(CowStore store)
@@ -127,6 +155,11 @@ namespace Cow.Net.Core
                 throw new Exception("Error Substore synced but found non connectable records on the parrent store");
             }
 
+            foreach (var r in newRecords.Where(deletedRecord => string.IsNullOrEmpty(deletedRecord.Identifier)))
+            {
+                r.Identifier = record.Id;
+            }
+
             var subRecordCollections = record.SubRecordCollection;
 
             if (subRecordCollections != null && subRecordCollections.ContainsKey(store.Id))
@@ -142,49 +175,22 @@ namespace Cow.Net.Core
             }
         }
 
-        public void UpdateItem(StoreRecord item)
-        {
-            
-        }
-
-        public void RemoveItems(IList<StoreRecord> items)
-        {
-
-        }
-
         protected virtual void OnStoreSynced()
         {
             var handler = StoreSynced;
             if (handler != null) handler(this);
         }
-    
-        //protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-        //{
-        //    using (BlockReentrancy())
-        //    {
-        //        if (_suspendCollectionChangeNotification) return;
-        //        var eventHandler = CollectionChanged;
-        //        if (eventHandler == null)
-        //        {
-        //            return;
-        //        }
 
-        //        var delegates = eventHandler.GetInvocationList();
+        protected virtual void OnSyncRequested(string identifier = null)
+        {
+            var handler = SyncRequested;
+            if (handler != null) handler(this, identifier);
+        }
 
-        //        foreach (var @delegate in delegates)
-        //        {
-        //            var handler = (NotifyCollectionChangedEventHandler) @delegate;
-
-        //            if (CoreSettings.Instance.SynchronizationContext != null)
-        //            {
-        //                CoreSettings.Instance.SynchronizationContext.Post(delegate { handler(this, e); }, null);
-        //            }
-        //            else
-        //            {
-        //                handler(this, e);
-        //            }
-        //        }
-        //    }
-        //}
+        protected virtual void OnUpdateRecordRequested(StoreRecord record)
+        {
+            var handler = UpdateRecordRequested;
+            if (handler != null) handler(this, record);
+        }
     }
 }
