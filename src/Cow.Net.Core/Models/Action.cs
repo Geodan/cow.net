@@ -2,7 +2,8 @@
 {
     public enum Action
     {
-        connected,        
+        connected,    
+        command,
         peerGone,
         newList,        
         syncinfo,

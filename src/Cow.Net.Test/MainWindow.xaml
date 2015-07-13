@@ -4,9 +4,14 @@
         xmlns:controls="clr-namespace:Cow.Net.test.UI.Controls"
         Title="MainWindow" Height="350" Width="525">
     <Grid>
-        <StackPanel>
-            <controls:ConnectionInfoView x:Name="ConnectionInfoView" HorizontalAlignment="Stretch"/>
-            <controls:PeerView x:Name="PeerView" />            
-        </StackPanel>        
+        <ScrollViewer>
+            <StackPanel>
+                <controls:ConnectionInfoView x:Name="ConnectionInfoView" HorizontalAlignment="Stretch"/>
+                <controls:SocketServerView x:Name="SocketServerView" />
+                <controls:PeerView x:Name="PeerView" />
+                <controls:ProjectView x:Name="ProjectView" />
+                <controls:UserView x:Name="UserView" />
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

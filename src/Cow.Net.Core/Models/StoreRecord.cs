@@ -20,20 +20,19 @@ namespace Cow.Net.Core.Models
         }
 
         private string _id;
-        private string _identifier;
-        private string _status;
+        private string _identifier;        
         private bool _dirty;
         private long _created;
         private bool _deleted;
         private long _updated;
         private object _data;
-        private Delta[] _deltas;
+        private ObservableCollection<Delta> _deltas;
 
         [JsonProperty("_id")]
         public string Id
         {
             get { return _id; }
-            set
+            internal set
             {
                 _id = value;
                 OnPropertyChanged();
@@ -44,29 +43,18 @@ namespace Cow.Net.Core.Models
         public string Identifier
         {
             get { return _identifier; }
-            set
+            internal set
             {
                 _identifier = value;
                 OnPropertyChanged();
             }
-        }
-        
-        [JsonProperty("status")]
-        public string Status
-        {
-            get { return _status; }
-            set
-            {
-                _status = value;
-                OnPropertyChanged();
-            }
-        }
+        }               
 
         [JsonProperty("dirty")]
         public bool Dirty
         {
             get { return _dirty; }
-            set
+            internal set
             {
                 _dirty = value;
                 OnPropertyChanged();
@@ -77,7 +65,7 @@ namespace Cow.Net.Core.Models
         public long Created
         {
             get { return _created; }
-            set
+            internal set
             {
                 _created = value;
                 OnPropertyChanged();
@@ -99,7 +87,7 @@ namespace Cow.Net.Core.Models
         public long Updated
         {
             get { return _updated; }
-            set
+            internal set
             {
                 _updated = value;
                 OnPropertyChanged();
@@ -118,10 +106,10 @@ namespace Cow.Net.Core.Models
         }
 
         [JsonProperty("deltas")]
-        public Delta[] Deltas
+        public ObservableCollection<Delta> Deltas
         {
             get { return _deltas; }
-            set
+            internal set
             {
                 _deltas = value;
                 OnPropertyChanged();
@@ -135,8 +123,21 @@ namespace Cow.Net.Core.Models
             record.Deleted = record.Deleted;
             record.Deltas = record.Deltas;
             record.Dirty = record.Dirty;
-            record.Status = record.Status;
-            record.Updated = record.Updated;            
+            record.Updated = record.Updated;
+        }
+
+        /// <summary>
+        /// Update the data for this record
+        /// </summary>
+        /// <param name="data"></param>
+        public void UpdateData(object data)
+        {
+            if (Deltas == null)
+                Deltas = new ObservableCollection<Delta>();
+
+            Deltas.Add(new Delta("", this));
+            Data = data;
+            Dirty = true;
         }
 
         internal void AddSubRecordList(string id)
@@ -150,12 +151,27 @@ namespace Cow.Net.Core.Models
             _subRecords.Add(id, new CowRecordCollection());
         }
 
+        public T GetData<T>()
+        {
+            return Data == null ? default(T) : JsonConvert.DeserializeObject<T>(Data.ToString());
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            if (handler == null)
+                return;
+
+            if (CoreSettings.Instance.SynchronizationContext != null)
+            {
+                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, new PropertyChangedEventArgs(propertyName)), null);
+            }
+            else
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

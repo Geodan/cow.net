@@ -31,36 +31,28 @@ namespace Cow.Net.Core
 
         internal void AddRange(List<StoreRecord> records, string key = null)
         {
-            var temp = _records;
             if (records == null)
                 records = new List<StoreRecord>();
 
             _records.AddRange(records);
-            OnCollectionChanged(records, new List<StoreRecord>(), temp, key);
+            OnCollectionChanged(records, key);
         }
 
-        internal void Remove(StoreRecord record, string key = null)
-        {
-            RemoveRange(new List<StoreRecord> { record });
-        }
-
-        internal void RemoveRange(List<StoreRecord> records, string key = null)
-        {
-            if (records == null)
-                records = new List<StoreRecord>();
-
-            foreach (var storeRecord in records)
-            {
-                _records.Remove(storeRecord);
-            }
-
-            OnCollectionChanged(new List<StoreRecord>(), records, _records, key);
-        }
-
-        protected virtual void OnCollectionChanged(List<StoreRecord> newrecords, List<StoreRecord> deletedrecords, List<StoreRecord> unchangedrecords, string key)
+        protected virtual void OnCollectionChanged(List<StoreRecord> newrecords, string key)
         {
             var handler = CollectionChanged;
-            if (handler != null) handler(this, newrecords, deletedrecords, unchangedrecords, key);
+            if(handler == null)
+                return;
+
+            if (CoreSettings.Instance.SynchronizationContext != null)
+            {            
+                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, newrecords, key),  null);
+            }
+            else
+            {
+                handler(this, newrecords, key);                
+            }
+
             OnPropertyChanged("Records");
         }
 
@@ -70,7 +62,17 @@ namespace Cow.Net.Core
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             var handler = PropertyChanged;
-            if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
+            if (handler == null)
+                return;
+
+            if (CoreSettings.Instance.SynchronizationContext != null)
+            {
+                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, new PropertyChangedEventArgs(propertyName)), null);
+            }
+            else
+            {
+                handler(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
     }
 }

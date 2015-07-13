@@ -16,10 +16,13 @@ namespace Cow.Net.Core.Utils
         public delegate void StoreSyncedHandler(object sender);
         public delegate void StoreSyncRequestedHandler(object sender, string identifier = null);
         public delegate void StoreUpdateRecordRequestedHandler(object sender, StoreRecord record);
+        public delegate void StoreMissingRecordsRequestedHandler(object sender, string project, List<StoreRecord> records);
+
+        //Other
+        public delegate void CommandReceivedHandler(object sender, CowMessage<Command> commandMessage);
 
         //Collection
         public delegate void RecordCollectionChanged(
-            object sender, List<StoreRecord> newRecords, List<StoreRecord> deletedRecords,
-            List<StoreRecord> unchangedRecords, string key);
+            object sender, List<StoreRecord> newRecords, string key);
     }
 }

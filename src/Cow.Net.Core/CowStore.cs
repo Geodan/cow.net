@@ -7,33 +7,34 @@ using WebSocketSharp;
 
 namespace Cow.Net.Core
 {
-    public class CowStore : CowRecordCollection
+    public abstract class CowStore : CowRecordCollection
     {
         public event CowEventHandlers.StoreSyncedHandler StoreSynced;
         public event CowEventHandlers.StoreSyncRequestedHandler SyncRequested;
-        public event CowEventHandlers.StoreUpdateRecordRequestedHandler UpdateRecordRequested;        
+        public event CowEventHandlers.StoreUpdateRecordRequestedHandler UpdateRecordRequested;
+        public event CowEventHandlers.StoreMissingRecordsRequestedHandler SendMissingRecordsRequested;        
 
         public string Id { get; private set; }
-        public bool IsPeerStore { get; private set; }
+        public SyncType SyncType { get; private set; }        
         public bool IsSubStore { get; private set; }
         public List<CowStore> SubStores { get; private set; }
         public bool SaveToLocalDatabase { get; private set; }
 
         private int _subSyncsNeeded;
-        private int _subSyncCount;        
+        private int _subSyncCount;
 
         /// <summary>
         /// Create a new CowStore
         /// </summary>
         /// <param name="id">id of the store, relates to database table and cow synctype response</param>
+        /// <param name="syncType">Type of store</param>
         /// <param name="subStores">List of substores for this Store i.e. Project substores -> Item, Groups </param>
-        /// <param name="saveToLocalDatabase">Default true = create table and save and laod from local storage</param>
-        /// <param name="isPeerStore">Indicator if this is the peer store, needed for some underlying Logic</param>
-        public CowStore(string id, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true, bool isPeerStore = false)
+        /// <param name="saveToLocalDatabase">Default true = create table and save and laod from local storage</param>        
+        public CowStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true)
         {
             Id = id;
             SaveToLocalDatabase = saveToLocalDatabase;
-            IsPeerStore = isPeerStore;
+            SyncType = syncType;
 
             if (subStores == null) return;
             foreach (var store in subStores)
@@ -42,12 +43,25 @@ namespace Cow.Net.Core
             }
         }
 
-        public void AddOrUpdateRecord(StoreRecord record)
+        public void Add(StoreRecord record)
         {
+            if (string.IsNullOrEmpty(record.Id))
+                record.Id = DateTime.Now.Ticks.ToString();
+
+            var recordInMemory = Records.FirstOrDefault(r => r.Id.Equals(record.Id));
+            if (recordInMemory != null)
+            {
+                throw new Exception("Duplicate record");
+            }
+
             //Add to memory
-            Add(record);
+            base.Add(record);
                         
             //Add to database
+            if (SaveToLocalDatabase)
+            {
+                
+            }
 
             //Send Update to other peers
             OnUpdateRecordRequested(record);
@@ -111,6 +125,12 @@ namespace Cow.Net.Core
             }
         }
 
+        internal void HandleWantedRecords(string project, CowMessage<WantedList> wantedRecords)
+        {
+            var wanted = wantedRecords.Payload.List.Select(s => Records.FirstOrDefault(r => r.Id.Equals(s))).Where(recordFromMemory => recordFromMemory != null).ToList();
+            OnSendMissingRecordsRequested(project, wanted);
+        }
+
         internal void LoadFromLocal()
         {
             //ToDo: Load from local database
@@ -143,7 +163,7 @@ namespace Cow.Net.Core
         /// <summary>
         /// A collection in a substore changed, set a reference to te subrecord in memory to the right record
         /// </summary>
-        private void SubStoreCollectionChanged(object sender, List<StoreRecord> newRecords, List<StoreRecord> deletedRecords, List<StoreRecord> unchangedRecords, string key)
+        private void SubStoreCollectionChanged(object sender, List<StoreRecord> newRecords, string key)
         {
             var store = sender as CowStore;
             if(store == null || string.IsNullOrEmpty(key))
@@ -155,7 +175,7 @@ namespace Cow.Net.Core
                 throw new Exception("Error Substore synced but found non connectable records on the parrent store");
             }
 
-            foreach (var r in newRecords.Where(deletedRecord => string.IsNullOrEmpty(deletedRecord.Identifier)))
+            foreach (var r in newRecords.Where(r => string.IsNullOrEmpty(r.Identifier)))
             {
                 r.Identifier = record.Id;
             }
@@ -165,9 +185,7 @@ namespace Cow.Net.Core
             if (subRecordCollections != null && subRecordCollections.ContainsKey(store.Id))
             {
                 var collection = record.SubRecordCollection[store.Id];
-
                 collection.AddRange(newRecords);
-                collection.RemoveRange(deletedRecords);
             }
             else
             {
@@ -191,6 +209,12 @@ namespace Cow.Net.Core
         {
             var handler = UpdateRecordRequested;
             if (handler != null) handler(this, record);
+        }
+
+        protected virtual void OnSendMissingRecordsRequested(string project, List<StoreRecord> records)
+        {
+            var handler = SendMissingRecordsRequested;
+            if (handler != null) handler(this, project, records);
         }
     }
 }

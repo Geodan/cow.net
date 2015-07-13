@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Windows;
-using System.Windows.Data;
+﻿using System.Collections.Generic;
+using System.Windows.Controls;
+using System.Windows.Media;
 using Cow.Net.Core;
+using Cow.Net.Core.Config.Default.DataTypes;
+using Cow.Net.Core.Models;
 
 namespace Cow.Net.test.UI.Controls
 {
@@ -20,40 +20,58 @@ namespace Cow.Net.test.UI.Controls
         public void SetPeers(CowStore peers)
         {
             Peers = peers;
-            Peers.CollectionChanged += Peers_CollectionChanged;
+            UpdateList(Peers.Records);
+            Peers.CollectionChanged += PeersCollectionChanged;
         }
 
-        private void Peers_CollectionChanged(object sender, List<Core.Models.StoreRecord> newRecords, List<Core.Models.StoreRecord> deletedRecords, List<Core.Models.StoreRecord> unchangedRecords, string key)
+        private void PeersCollectionChanged(object sender, List<StoreRecord> newRecords, string key)
         {
-            
-        }
-    }
-
-    public sealed class BooleanToVisibilityConverter : BooleanConverter<Visibility>
-    {
-        public BooleanToVisibilityConverter() :
-            base(Visibility.Visible, Visibility.Collapsed) { }
-    }
-
-    public class BooleanConverter<T> : IValueConverter
-    {
-        public BooleanConverter(T trueValue, T falseValue)
-        {
-            True = trueValue;
-            False = falseValue;
+            UpdateList(newRecords);
         }
 
-        public T True { get; set; }
-        public T False { get; set; }
-
-        public virtual object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        private void UpdateList(IEnumerable<StoreRecord> records)
         {
-            return value is bool && ((bool)value) ? True : False;
+            foreach (var storeRecord in records)
+            {
+                storeRecord.PropertyChanged += StoreRecordPropertyChanged;
+                if(storeRecord.Deleted)
+                    continue;
+
+                var data = storeRecord.GetData<PeerData>();
+                var txtBlock = new TextBlock { Text = data == null || string.IsNullOrEmpty(data.Userid) ? storeRecord.Id : data.Userid, Tag = storeRecord, Foreground = new SolidColorBrush(Colors.Black) };
+                PeersList.Items.Add(txtBlock);
+            }
         }
 
-        public virtual object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        private void StoreRecordPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            return value is T && EqualityComparer<T>.Default.Equals((T)value, True);
+            var record = sender as StoreRecord;
+            if (record == null)
+                return;
+
+            if (e.PropertyName.ToLower().Equals("data"))
+            {
+                foreach (var item in PeersList.Items)
+                {
+                    var r = item as TextBlock;
+                    if (r.Tag != record) continue;
+
+                    var data = record.GetData<PeerData>();
+                    r.Text = data == null || string.IsNullOrEmpty(data.Userid) ? record.Id : data.Userid;
+                    break;
+                }
+            }
+
+            if (!e.PropertyName.ToLower().Equals("deleted"))
+                return;
+
+            foreach (var item in PeersList.Items)
+            {
+                var r = item as TextBlock;
+                if (r.Tag != record) continue;
+                PeersList.Items.Remove(item);
+                break;
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Cow.Net.Core.Models;
 
 namespace Cow.Net.Core
 {
@@ -43,7 +44,7 @@ namespace Cow.Net.Core
         /// <returns></returns>
         public CowStore GetPeerStore()
         {
-            return GetAllStores().FirstOrDefault(mainStore => mainStore.IsPeerStore);
+            return GetAllStores().FirstOrDefault(mainStore => mainStore.SyncType == SyncType.peers);
         }
 
         /// <summary>

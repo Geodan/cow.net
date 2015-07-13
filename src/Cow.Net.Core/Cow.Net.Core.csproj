@@ -40,19 +40,32 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\DefaultConfig.cs" />
+    <Compile Include="Config\Default\DataTypes\PeerData.cs" />
+    <Compile Include="Config\Default\DataTypes\SocketserverData.cs" />
+    <Compile Include="Config\Default\DataTypes\UserData.cs" />
+    <Compile Include="Config\Default\DefaultConfig.cs" />
+    <Compile Include="Config\Default\Stores\GroupStore.cs" />
+    <Compile Include="Config\Default\Stores\ItemStore.cs" />
+    <Compile Include="Config\Default\Stores\PeerStore.cs" />
+    <Compile Include="Config\Default\Stores\ProjectStore.cs" />
+    <Compile Include="Config\Default\Stores\SocketServerStore.cs" />
+    <Compile Include="Config\Default\Stores\UserStore.cs" />
     <Compile Include="Config\ICowClientConfig.cs" />
     <Compile Include="CowClient.cs" />
     <Compile Include="CowRecordCollection.cs" />
     <Compile Include="CowStoreManager.cs" />
-    <Compile Include="Extensions\CowStoreExtensions.cs" />
+    <Compile Include="MessageHandlers\CommandHandler.cs" />
     <Compile Include="MessageHandlers\PeerGonehandler.cs" />
     <Compile Include="MessageHandlers\UpdatedRecordsHandler.cs" />
+    <Compile Include="MessageHandlers\WantedRecordsHandler.cs" />
+    <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Delta.cs" />
     <Compile Include="Models\PeerGone.cs" />
     <Compile Include="CoreSettings.cs" />
     <Compile Include="Models\UpdatedRecord.cs" />
+    <Compile Include="Models\WantedList.cs" />
     <Compile Include="Properties\Annotations1.cs" />
+    <Compile Include="Config\Default\DataTypes\ProjectData.cs" />
     <Compile Include="Utils\CowEventHandlers.cs" />
     <Compile Include="MessageHandlers\ConnectedHandler.cs" />
     <Compile Include="MessageHandlers\MissingRecordsHandler.cs" />
@@ -67,6 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storage\IStorageProvider.cs" />
     <Compile Include="Utils\CowMessageFactory.cs" />
+    <Compile Include="Utils\DefaultRecords.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

@@ -13,8 +13,7 @@ namespace Cow.Net.Core.MessageHandlers
 
             foreach (var storeObject in peerStore.Records.Where(storeObject => storeObject.Id.Equals(peerGone.Payload.GonePeerId)))
             {
-                //ToDo: needs to be removed from the list or just set to deleted?
-                peerStore.Remove(storeObject);
+                storeObject.Deleted = true;
                 break;
             }
         }

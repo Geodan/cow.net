@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Threading;
 using Cow.Net.Core;
 using Cow.Net.Core.Config;
+using Cow.Net.Core.Config.Default;
 
 namespace Cow.Net.test
 {
@@ -28,6 +29,9 @@ namespace Cow.Net.test
             _client.Connect();
 
             PeerView.SetPeers(_config.Peers);
+            SocketServerView.SetSocketServerStore(_config.SocketServers);
+            ProjectView.SetProjects(_config.Projects);
+            UserView.SetUserStore(_config.Users);
         }
 
         private void ClientCowConnectionInfoReceived(object sender, Core.Models.ConnectionInfo connectionInfo)

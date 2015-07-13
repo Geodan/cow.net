@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using Cow.Net.Core.Config.Default.Stores;
+using Cow.Net.Core.Models;
 using Cow.Net.Core.Storage;
 
-namespace Cow.Net.Core.Config
+namespace Cow.Net.Core.Config.Default
 {
     public class DefaultConfig : ICowClientConfig
     {
-        public CowStore Peers { get; private set; }
-        public CowStore Users { get; private set; }
-        public CowStore SocketServers { get; private set; }
-        public CowStore Projects { get; private set; }
+        public PeerStore Peers { get; private set; }
+        public UserStore Users { get; private set; }
+        public SocketServerStore SocketServers { get; private set; }
+        public ProjectStore Projects { get; private set; }
 
         public string Address { get; set; }
         public CowStoreManager CowStoreManager { get; set; }
@@ -26,13 +28,13 @@ namespace Cow.Net.Core.Config
 
         private void SetupStores()
         {
-            Peers = new CowStore("peers", null, false, true);
-            Users = new CowStore("users");
-            SocketServers = new CowStore("socketservers");
-            Projects = new CowStore("projects", new List<CowStore>
+            Peers = new PeerStore("peers", SyncType.peers, null, false);
+            Users = new UserStore("users", SyncType.users);
+            SocketServers = new SocketServerStore("socketservers", SyncType.socketservers);
+            Projects = new ProjectStore("projects", SyncType.projects, new List<CowStore>
             {
-                new CowStore("items"),
-                new CowStore("groups")
+                new ItemStore("items", SyncType.items),
+                new GroupStore("groups", SyncType.groups)
             });
 
             CowStoreManager = new CowStoreManager(new List<CowStore>

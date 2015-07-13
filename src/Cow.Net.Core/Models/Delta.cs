@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
 {
@@ -15,5 +16,18 @@ namespace Cow.Net.Core.Models
 
         [JsonProperty("data")]
         public object Data { get; set; }
+
+        public Delta()
+        {
+            
+        }
+
+        public Delta(string userId, StoreRecord record)
+        {
+            UserId = userId;
+            TimeStamp = DateTime.Now.Ticks;
+            Deleted = record.Deleted;
+            Data = record.Data;
+        }
     }
 }

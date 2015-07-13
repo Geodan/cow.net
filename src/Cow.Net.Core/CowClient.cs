@@ -23,6 +23,7 @@ namespace Cow.Net.Core
         public event CowEventHandlers.ConnectionErrorHandler CowSocketConnectionError;
         public event CowEventHandlers.ConnectionClosedHandler CowSocketDisconnected;
         public event CowEventHandlers.DatabaseErrorHandler CowDatabaseError;
+        public event CowEventHandlers.CommandReceivedHandler CowCommandReceived;        
 
         public ICowClientConfig Config { get; private set; }
         
@@ -36,6 +37,7 @@ namespace Cow.Net.Core
             set
             {
                 _connectionInfo = value;
+                CoreSettings.Instance.ConnectionInfo = _connectionInfo;
                 OnPropertyChanged();
             }
         }
@@ -68,26 +70,34 @@ namespace Cow.Net.Core
             {
                 cowStore.SyncRequested += CowStoreSyncRequested;
                 cowStore.UpdateRecordRequested += CowStoreUpdateRecordRequested;
+                cowStore.SendMissingRecordsRequested += CowStoreSendMissingRecordsRequested;
             }
         }
 
         private void CowStoreSyncRequested(object sender, string identifier)
         {
-            var store = sender as CowStore;
-            if (sender == null)
-                return;
+            var store = sender as CowStore;            
+            if (store == null) return;
 
-            var jsonString = JsonSerialize(CowMessageFactory.CreateSyncMessage(ConnectionInfo, store.Id, store.Records, identifier));
+            var jsonString = JsonSerialize(CowMessageFactory.CreateSyncMessage(ConnectionInfo, store.SyncType, store.Records, identifier));
             _socketClient.Send(jsonString);
         }
 
         private void CowStoreUpdateRecordRequested(object sender, StoreRecord record)
         {
             var store = sender as CowStore;
-            if (sender == null)
-                return;
+            if (store == null) return;
 
-            var jsonString = JsonSerialize(CowMessageFactory.CreateUpdateMessage(ConnectionInfo, store.Id, record));
+            var jsonString = JsonSerialize(CowMessageFactory.CreateUpdateMessage(ConnectionInfo, store.SyncType, record));
+            _socketClient.Send(jsonString);
+        }
+
+        private void CowStoreSendMissingRecordsRequested(object sender, string project, List<StoreRecord> records)
+        {
+            var store = sender as CowStore;
+            if (store == null) return;
+
+            var jsonString = JsonSerialize(CowMessageFactory.CreateMissingRecordsMessage(ConnectionInfo, store.SyncType, project, records));
             _socketClient.Send(jsonString);
         }
 
@@ -108,9 +118,9 @@ namespace Cow.Net.Core
         private void SetupSocketClient(string address, string[] protocols)
         {
             _socketClient = new WebSocketSharp.WebSocket(address, protocols ?? new[] { "connect" });
-            _socketClient.OnError += SocketClientOnError;
-            _socketClient.OnOpen += SocketClientOnOpen;
-            _socketClient.OnClose += SocketClientOnClose;
+            _socketClient.OnError   += SocketClientOnError;
+            _socketClient.OnOpen    += SocketClientOnOpen;
+            _socketClient.OnClose   += SocketClientOnClose;
             _socketClient.OnMessage += SocketClientOnMessage;
         }
 
@@ -151,18 +161,11 @@ namespace Cow.Net.Core
                 case Action.connected:
                     ConnectionInfo = ConnectedHandler.Handle(message);
                     OnCowConnectionInfoReceived(ConnectionInfo);
-                    Config.CowStoreManager.GetPeerStore().AddOrUpdateRecord(new StoreRecord
-                    {
-                        Id = ConnectionInfo.PeerId,
-                        Created = DateTime.Now.Ticks,
-                        Data = null,
-                        Deleted = false,
-                        Deltas = new Delta[0],
-                        Updated = DateTime.Now.Ticks,
-                        Dirty = false,
-                        Status = "clean"
-                    });
+                    Config.CowStoreManager.GetPeerStore().Add(DefaultRecords.CreatePeerRecord(ConnectionInfo));
                     Sync();
+                    break;
+                case Action.command:
+                    OnCowCommandReceived(CommandHandler.Handle(message));
                     break;
                 case Action.missingRecords:
                     MissingRecordsHandler.Handle(_socketClient, ConnectionInfo, message, Config.CowStoreManager);
@@ -173,6 +176,7 @@ namespace Cow.Net.Core
                     UpdatedRecordsHandler.Handle(message, Config.CowStoreManager);
                     break;
                 case Action.wantedList: //List of items to broadcast
+                    Debug.WriteLine(message);
                     break;
                 case Action.peerGone:
                     PeerGonehandler.Handle(message, Config.CowStoreManager);
@@ -213,6 +217,12 @@ namespace Cow.Net.Core
         {
             var handler = CowConnectionInfoReceived;
             if (handler != null) handler(this, connectioninfo);
+        }
+
+        private void OnCowCommandReceived(CowMessage<Command> commandmessage)
+        {
+            var handler = CowCommandReceived;
+            if (handler != null) handler(this, commandmessage);
         }
 
         [NotifyPropertyChangedInvocator]
