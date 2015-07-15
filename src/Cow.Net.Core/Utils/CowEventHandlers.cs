@@ -18,6 +18,9 @@ namespace Cow.Net.Core.Utils
         public delegate void StoreUpdateRecordRequestedHandler(object sender, StoreRecord record);
         public delegate void StoreMissingRecordsRequestedHandler(object sender, string project, List<StoreRecord> records);
 
+        //Record
+        public delegate void RecordSyncToPeersRequested(object sender, StoreRecord records);        
+
         //Other
         public delegate void CommandReceivedHandler(object sender, CowMessage<Command> commandMessage);
 

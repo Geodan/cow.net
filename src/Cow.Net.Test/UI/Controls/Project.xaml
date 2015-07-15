@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="Cow.Net.test.UI.Controls.Project"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Background="White" Margin="2">
+    <Grid>
+        <StackPanel>
+            <TextBlock x:Name="TxtProjectName" Text="TEST" Foreground="Black" />
+            <StackPanel Orientation="Horizontal" >
+                <CheckBox x:Name="CbDeleted" Checked="CbDeleted_OnChecked" Unchecked="CbDeleted_OnUnchecked" VerticalAlignment="Center" />
+                <TextBlock Text="deleted" VerticalAlignment="Center" Margin="5,0,0,0" />
+            </StackPanel>
+            <Button x:Name="BtnSave" Height="28" Width="60" Content="SAVE" Click="BtnSaveOnClick" />
+        </StackPanel>
+    </Grid>
+</UserControl>

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using Cow.Net.Core.Utils;
 using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
@@ -9,6 +12,9 @@ namespace Cow.Net.Core.Models
     public class StoreRecord : INotifyPropertyChanged
     {        
         private Dictionary<string, CowRecordCollection> _subRecords;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event CowEventHandlers.RecordSyncToPeersRequested SyncToPeersRequested;        
 
         [JsonIgnore]
         public ReadOnlyDictionary<string, CowRecordCollection> SubRecordCollection
@@ -18,14 +24,16 @@ namespace Cow.Net.Core.Models
                 return new ReadOnlyDictionary<string, CowRecordCollection>(_subRecords);
             }
         }
-
+        
         private string _id;
         private string _identifier;        
         private bool _dirty;
         private long _created;
         private bool _deleted;
         private long _updated;
-        private object _data;
+        private bool? _newDeletedState;
+        private Dictionary<string, object> _data;
+        private Dictionary<string, object> _dataChangedQueue;
         private ObservableCollection<Delta> _deltas;
 
         [JsonProperty("_id")]
@@ -48,7 +56,15 @@ namespace Cow.Net.Core.Models
                 _identifier = value;
                 OnPropertyChanged();
             }
-        }               
+        }
+
+        [JsonIgnore]
+        public bool HasChanges
+        {
+            get {
+                return (Dirty || _dataChangedQueue != null && _dataChangedQueue.Any()) || (_newDeletedState != null && _newDeletedState != Deleted);
+            }
+        }
 
         [JsonProperty("dirty")]
         public bool Dirty
@@ -76,7 +92,7 @@ namespace Cow.Net.Core.Models
         public bool Deleted
         {
             get { return _deleted; }
-            set
+            internal set
             {
                 _deleted = value;
                 OnPropertyChanged();
@@ -95,10 +111,11 @@ namespace Cow.Net.Core.Models
         }
 
         [JsonProperty("data")]
-        public object Data
+        [JsonConverter(typeof(DataConverter))]
+        public Dictionary<string, object> Data
         {
             get { return _data; }
-            set
+            internal set
             {
                 _data = value;
                 OnPropertyChanged();
@@ -124,20 +141,87 @@ namespace Cow.Net.Core.Models
             record.Deltas = record.Deltas;
             record.Dirty = record.Dirty;
             record.Updated = record.Updated;
-        }
+        }        
 
         /// <summary>
         /// Update the data for this record
         /// </summary>
-        /// <param name="data"></param>
-        public void UpdateData(object data)
+        public void UpdateData(string key, object value)
         {
             if (Deltas == null)
                 Deltas = new ObservableCollection<Delta>();
 
-            Deltas.Add(new Delta("", this));
-            Data = data;
-            Dirty = true;
+            if(!Data.ContainsKey(key))
+                throw new Exception("Property does not exist in record");
+
+            if (_dataChangedQueue == null)
+                _dataChangedQueue = new Dictionary<string, object>();
+
+            if (_dataChangedQueue.ContainsKey(key))
+                _dataChangedQueue[key] = value;
+
+            _dataChangedQueue.Add(key, value);
+        }        
+
+        public void SetDeleted(bool deleted)
+        {
+            _newDeletedState = deleted;
+        }
+
+        /// <summary>
+        /// Save Changes and push to other peers
+        /// </summary>
+        public void Sync()
+        {
+            if(!Dirty && !HasChanges)
+                return;
+
+            //Create delta
+            var newDeltaRecord = new StoreRecord();
+
+            if (_dataChangedQueue != null)
+            {
+                foreach (var o in _dataChangedQueue)
+                {
+                    if (newDeltaRecord.Data == null)
+                        newDeltaRecord.Data = new Dictionary<string, object>();
+
+                    newDeltaRecord.Data.Add(o.Key, Data[o.Key]);
+                }
+            }
+
+            newDeltaRecord.Created = Created;
+            newDeltaRecord.Deleted = Deleted;
+            newDeltaRecord.Dirty = Dirty;
+            newDeltaRecord.Id = Id;
+            newDeltaRecord.Updated = Updated;
+            
+            Deltas.Add(new Delta("", newDeltaRecord));
+
+            if (_dataChangedQueue != null)
+            {
+                foreach (var o in _dataChangedQueue)
+                {
+                    if (Data == null)
+                        Data = new Dictionary<string, object>();
+
+                    Data.Add(o.Key, o.Value);
+                }
+            }
+
+            Deleted = _newDeletedState != null ? _newDeletedState.Value : Deleted;
+            Updated = DateTime.Now.Ticks;
+
+            ResetChanges();
+            Dirty = false;
+
+            OnSyncToPeersRequested(this);
+        }
+
+        public void ResetChanges()
+        {
+            _dataChangedQueue = null;
+            _newDeletedState = null;
         }
 
         internal void AddSubRecordList(string id)
@@ -149,14 +233,13 @@ namespace Cow.Net.Core.Models
                 _subRecords = new Dictionary<string, CowRecordCollection>();
 
             _subRecords.Add(id, new CowRecordCollection());
-        }
+        }        
 
-        public T GetData<T>()
+        protected virtual void OnSyncToPeersRequested(StoreRecord record)
         {
-            return Data == null ? default(T) : JsonConvert.DeserializeObject<T>(Data.ToString());
+            var handler = SyncToPeersRequested;
+            if (handler != null) handler(this, record);
         }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

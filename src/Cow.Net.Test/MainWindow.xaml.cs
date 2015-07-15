@@ -1,8 +1,8 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using Cow.Net.Core;
-using Cow.Net.Core.Config;
 using Cow.Net.Core.Config.Default;
 
 namespace Cow.Net.test
@@ -19,7 +19,7 @@ namespace Cow.Net.test
             var context = new DispatcherSynchronizationContext(Application.Current.Dispatcher);
             SynchronizationContext.SetSynchronizationContext(context);
             
-            _config = new DefaultConfig("wss://websocket.geodan.nl:443/eagle", new SQLiteStorageProvider.Core.SQLiteStorageProvider("C:/cow.sqlite3"), context);            
+            _config = new DefaultConfig("wss://websocket.geodan.nl:443/eagle", "eagle", true, new SQLiteStorageProvider.Core.SQLiteStorageProvider("C:/cow.sqlite3"), context);            
             _client = new CowClient(_config);
             _client.PropertyChanged += ClientPropertyChanged;
             _client.CowDatabaseError += ClientCowDatabaseError;
@@ -27,7 +27,7 @@ namespace Cow.Net.test
             _client.CowSocketConnectionError += ClientCowSocketConnectionError;
             _client.CowConnectionInfoReceived += ClientCowConnectionInfoReceived;
             _client.Connect();
-
+            
             PeerView.SetPeers(_config.Peers);
             SocketServerView.SetSocketServerStore(_config.SocketServers);
             ProjectView.SetProjects(_config.Projects);

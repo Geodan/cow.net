@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Cow.Net.Core.Config.Default.DataTypes;
 using Cow.Net.Core.Config.Default.Stores;
 using Cow.Net.Core.Models;
 using Newtonsoft.Json;
@@ -32,12 +31,8 @@ namespace Cow.Net.test.UI.Controls
         private void UpdateList(IEnumerable<StoreRecord> records)
         {
             foreach (var storeRecord in records)
-            {                
-                if (storeRecord.Deleted)
-                    continue;
-                
-                var data = storeRecord.GetData<ProjectData>();
-                var txtBlock = new TextBlock { Text = data.Name, Tag = storeRecord, Foreground = new SolidColorBrush(Colors.Black) };
+            {                                
+                var txtBlock = new Project(storeRecord) { Tag = storeRecord };
                 ProjectList.Items.Add(txtBlock);
             }
         }
@@ -57,7 +52,12 @@ namespace Cow.Net.test.UI.Controls
             public Location IncidentLocation { get; set; }
 
             [JsonProperty("teams")]
-            public Team[] Teams { get; set; }            
+            public Team[] Teams { get; set; }
+
+            public ProjectData(Dictionary<string, object> dictionary)
+            {
+                
+            }
         }
 
         public class Location

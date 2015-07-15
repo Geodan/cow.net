@@ -37,8 +37,7 @@ namespace Cow.Net.test.UI.Controls
                 if(storeRecord.Deleted)
                     continue;
 
-                var data = storeRecord.GetData<PeerData>();
-                var txtBlock = new TextBlock { Text = data == null || string.IsNullOrEmpty(data.Userid) ? storeRecord.Id : data.Userid, Tag = storeRecord, Foreground = new SolidColorBrush(Colors.Black) };
+                var txtBlock = new TextBlock { Text = storeRecord.Id, Tag = storeRecord, Foreground = new SolidColorBrush(Colors.Black) };
                 PeersList.Items.Add(txtBlock);
             }
         }
@@ -56,8 +55,7 @@ namespace Cow.Net.test.UI.Controls
                     var r = item as TextBlock;
                     if (r.Tag != record) continue;
 
-                    var data = record.GetData<PeerData>();
-                    r.Text = data == null || string.IsNullOrEmpty(data.Userid) ? record.Id : data.Userid;
+                    r.Text = record.Id;
                     break;
                 }
             }
@@ -65,12 +63,15 @@ namespace Cow.Net.test.UI.Controls
             if (!e.PropertyName.ToLower().Equals("deleted"))
                 return;
 
-            foreach (var item in PeersList.Items)
+            if (record.Deleted)
             {
-                var r = item as TextBlock;
-                if (r.Tag != record) continue;
-                PeersList.Items.Remove(item);
-                break;
+                foreach (var item in PeersList.Items)
+                {
+                    var r = item as TextBlock;
+                    if (r.Tag != record) continue;
+                    PeersList.Items.Remove(item);
+                    break;
+                }
             }
         }
     }

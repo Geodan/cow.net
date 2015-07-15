@@ -14,13 +14,24 @@ namespace Cow.Net.Core.Config.Default
         public ProjectStore Projects { get; private set; }
 
         public string Address { get; set; }
+        public string ServerKey { get; set; }
+        public bool IsAlphaPeer{ get; set; }
         public CowStoreManager CowStoreManager { get; set; }
         public IStorageProvider StorageProvider { get; set; }
         public SynchronizationContext SynchronizationContext { get; set; }
 
-        public DefaultConfig(string address, IStorageProvider storageProvider, SynchronizationContext synchronizationContext = null)
+        /// <summary>
+        /// Create a default config
+        /// </summary>
+        /// <param name="address">Address to the cow server</param>
+        /// <param name="serverKey">Server key of the server instance</param>
+        /// <param name="isAlphaPeer">Set to true if this peer can be used as alpha</param>
+        /// <param name="storageProvider">Local storage provider to use</param>
+        /// <param name="synchronizationContext">Context for synchronizing to the main thread if needed</param>
+        public DefaultConfig(string address, string serverKey, bool isAlphaPeer, IStorageProvider storageProvider, SynchronizationContext synchronizationContext = null)
         {
             Address = address;
+            ServerKey = serverKey;
             StorageProvider = storageProvider;
             SynchronizationContext = synchronizationContext;
             SetupStores();

@@ -23,8 +23,8 @@ namespace Cow.Net.Core.Config.Default.Stores
             {
                 try
                 {
-                    var data = record.GetData<ProjectData>();
-                    projects.Add(data);
+                    //var data = record.GetData<ProjectData>();
+                    //projects.Add(data);
                 }
                 catch{}
             }

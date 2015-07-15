@@ -44,6 +44,7 @@
     <Compile Include="Config\Default\DataTypes\SocketserverData.cs" />
     <Compile Include="Config\Default\DataTypes\UserData.cs" />
     <Compile Include="Config\Default\DefaultConfig.cs" />
+    <Compile Include="Config\Default\Records\PeerRecord.cs" />
     <Compile Include="Config\Default\Stores\GroupStore.cs" />
     <Compile Include="Config\Default\Stores\ItemStore.cs" />
     <Compile Include="Config\Default\Stores\PeerStore.cs" />
@@ -54,6 +55,8 @@
     <Compile Include="CowClient.cs" />
     <Compile Include="CowRecordCollection.cs" />
     <Compile Include="CowStoreManager.cs" />
+    <Compile Include="Exceptions\IncorrectServerKeyException.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="MessageHandlers\CommandHandler.cs" />
     <Compile Include="MessageHandlers\PeerGonehandler.cs" />
     <Compile Include="MessageHandlers\UpdatedRecordsHandler.cs" />
@@ -80,6 +83,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Storage\IStorageProvider.cs" />
     <Compile Include="Utils\CowMessageFactory.cs" />
+    <Compile Include="Utils\DataConverter.cs" />
     <Compile Include="Utils\DefaultRecords.cs" />
   </ItemGroup>
   <ItemGroup>

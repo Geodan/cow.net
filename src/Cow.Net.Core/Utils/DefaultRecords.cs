@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Cow.Net.Core.Config.Default.Records;
 using Cow.Net.Core.Models;
 
 namespace Cow.Net.Core.Utils
@@ -8,7 +9,7 @@ namespace Cow.Net.Core.Utils
     {
         public static StoreRecord CreatePeerRecord(ConnectionInfo connectionInfo)
         {
-            return new StoreRecord
+            return new PeerRecord
             {
                 Id = connectionInfo.PeerId,
                 Created = DateTime.Now.Ticks,
@@ -16,7 +17,7 @@ namespace Cow.Net.Core.Utils
                 Deleted = false,
                 Deltas = new ObservableCollection<Delta>(),
                 Updated = DateTime.Now.Ticks,
-                Dirty = false,
+                Dirty = true,
             };
         }
     }

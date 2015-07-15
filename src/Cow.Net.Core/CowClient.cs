@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using cow.core.Annotations;
 using Cow.Net.Core.Config;
+using Cow.Net.Core.Exceptions;
 using Cow.Net.Core.MessageHandlers;
 using Cow.Net.Core.Models;
 using Cow.Net.Core.Storage;
@@ -26,10 +28,10 @@ namespace Cow.Net.Core
         public event CowEventHandlers.CommandReceivedHandler CowCommandReceived;        
 
         public ICowClientConfig Config { get; private set; }
-        
-        private WebSocketSharp.WebSocket _socketClient;
+                
         private bool _localStorageAvailable;        
-        private ConnectionInfo _connectionInfo;                      
+        private ConnectionInfo _connectionInfo;
+        private WebSocketSharp.WebSocket _socketClient;
 
         public ConnectionInfo ConnectionInfo
         {
@@ -69,9 +71,18 @@ namespace Cow.Net.Core
             foreach (var cowStore in allStores)
             {
                 cowStore.SyncRequested += CowStoreSyncRequested;
-                cowStore.UpdateRecordRequested += CowStoreUpdateRecordRequested;
+                cowStore.SyncRecordsRequested += CowStoreSyncRecordsRequested;
                 cowStore.SendMissingRecordsRequested += CowStoreSendMissingRecordsRequested;
             }
+        }
+
+        private void CowStoreSyncRecordsRequested(object sender, StoreRecord record)
+        {
+            var store = sender as CowStore;
+            if (store == null) return;
+
+            var jsonString = JsonSerialize(CowMessageFactory.CreateUpdateMessage(ConnectionInfo, store.SyncType, record));
+            _socketClient.Send(jsonString);
         }
 
         private void CowStoreSyncRequested(object sender, string identifier)
@@ -80,15 +91,6 @@ namespace Cow.Net.Core
             if (store == null) return;
 
             var jsonString = JsonSerialize(CowMessageFactory.CreateSyncMessage(ConnectionInfo, store.SyncType, store.Records, identifier));
-            _socketClient.Send(jsonString);
-        }
-
-        private void CowStoreUpdateRecordRequested(object sender, StoreRecord record)
-        {
-            var store = sender as CowStore;
-            if (store == null) return;
-
-            var jsonString = JsonSerialize(CowMessageFactory.CreateUpdateMessage(ConnectionInfo, store.SyncType, record));
             _socketClient.Send(jsonString);
         }
 
@@ -140,7 +142,7 @@ namespace Cow.Net.Core
         {
             foreach (var store in Config.CowStoreManager.MainStores)
             {
-                store.Sync();   
+                store.SyncStore();   
             }
         }
 
@@ -159,10 +161,7 @@ namespace Cow.Net.Core
             switch (action)
             {
                 case Action.connected:
-                    ConnectionInfo = ConnectedHandler.Handle(message);
-                    OnCowConnectionInfoReceived(ConnectionInfo);
-                    Config.CowStoreManager.GetPeerStore().Add(DefaultRecords.CreatePeerRecord(ConnectionInfo));
-                    Sync();
+                    HandleNewConnection(message);
                     break;
                 case Action.command:
                     OnCowCommandReceived(CommandHandler.Handle(message));
@@ -181,7 +180,51 @@ namespace Cow.Net.Core
                 case Action.peerGone:
                     PeerGonehandler.Handle(message, Config.CowStoreManager);
                     break;
+                case Action.newList:
+                    var amiAlpha = AmIAlpha();
+                    break;
             }
+        }
+
+        private void HandleNewConnection(string message)
+        {
+            ConnectionInfo = ConnectedHandler.Handle(message);
+            CheckServerkey(ConnectionInfo);
+            OnCowConnectionInfoReceived(ConnectionInfo);
+            Config.CowStoreManager.GetPeerStore().Add(DefaultRecords.CreatePeerRecord(ConnectionInfo));
+            Config.CowStoreManager.GetPeerStore().SyncRecords();
+            Sync();
+        }
+
+        private bool AmIAlpha()
+        {
+            if (Config.IsAlphaPeer)
+                return false;
+
+            var peerStore = Config.CowStoreManager.GetPeerStore();
+            if (peerStore.Records == null || !peerStore.Records.Any())
+                return false;
+
+            StoreRecord oldest = null;
+
+            foreach (var storeRecord in peerStore.Records)
+            {
+                if (oldest == null)
+                    oldest = storeRecord;
+
+                if (storeRecord.Updated > oldest.Updated)
+                    oldest = storeRecord;
+            }
+
+            return ConnectionInfo.PeerId.Equals(oldest.Id);
+        }
+
+        private void CheckServerkey(ConnectionInfo connectionInfo)
+        {
+            if (connectionInfo.ServerKey.Equals(Config.ServerKey)) return;
+
+            Disconnect();
+            throw new IncorrectServerKeyException(Config.ServerKey, connectionInfo.ServerKey);
         }
 
         private void SocketClientOnMessage(object sender, WebSocketSharp.MessageEventArgs e)

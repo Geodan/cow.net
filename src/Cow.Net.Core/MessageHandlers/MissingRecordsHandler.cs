@@ -9,7 +9,7 @@ namespace Cow.Net.Core.MessageHandlers
     {
         public static void Handle(WebSocket socket, ConnectionInfo connectionInfo, string message, CowStoreManager storeManager)
         {
-            var missingRecords = JsonConvert.DeserializeObject<CowMessage<NewList>>(message);
+            var missingRecords = JsonConvert.DeserializeObject<CowMessage<NewList>>(message);         
             var storeId = missingRecords.Payload.SyncType.ToString();
             var store = storeManager.GetStoreById(storeId);
             

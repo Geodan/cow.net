@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Cow.Net.Core.Annotations;
 using Cow.Net.Core.Models;
@@ -10,7 +11,9 @@ namespace Cow.Net.Core
 {
     public class CowRecordCollection : INotifyPropertyChanged
     {
-        public event CowEventHandlers.RecordCollectionChanged CollectionChanged;    
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event CowEventHandlers.RecordCollectionChanged CollectionChanged;
+        public event CowEventHandlers.RecordSyncToPeersRequested SyncRecordsRequested;
 
         private readonly List<StoreRecord> _records;
 
@@ -24,6 +27,15 @@ namespace Cow.Net.Core
             get { return new ReadOnlyCollection<StoreRecord>(_records); }
         }
 
+        public void SyncRecords()
+        {
+            var recordsToSync = _records.Where(storeRecord => storeRecord.HasChanges).ToList();
+            foreach (var storeRecord in recordsToSync)
+            {
+                storeRecord.Sync();
+            }
+        }
+
         internal void Add(StoreRecord record, string key = null)
         {
             AddRange(new List<StoreRecord>{record}, key);
@@ -34,8 +46,18 @@ namespace Cow.Net.Core
             if (records == null)
                 records = new List<StoreRecord>();
 
+            foreach (var storeRecord in records)
+            {
+                storeRecord.SyncToPeersRequested += StoreRecordSyncToPeersRequested;
+            }
+
             _records.AddRange(records);
             OnCollectionChanged(records, key);
+        }
+
+        private void StoreRecordSyncToPeersRequested(object sender, StoreRecord records)
+        {
+            OnSyncRecordsRequested(records);
         }
 
         protected virtual void OnCollectionChanged(List<StoreRecord> newrecords, string key)
@@ -54,9 +76,13 @@ namespace Cow.Net.Core
             }
 
             OnPropertyChanged("Records");
-        }
+        }        
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnSyncRecordsRequested(StoreRecord record)
+        {
+            var handler = SyncRecordsRequested;
+            if (handler != null) handler(this, record);
+        }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

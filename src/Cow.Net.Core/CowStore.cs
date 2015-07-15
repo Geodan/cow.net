@@ -11,7 +11,6 @@ namespace Cow.Net.Core
     {
         public event CowEventHandlers.StoreSyncedHandler StoreSynced;
         public event CowEventHandlers.StoreSyncRequestedHandler SyncRequested;
-        public event CowEventHandlers.StoreUpdateRecordRequestedHandler UpdateRecordRequested;
         public event CowEventHandlers.StoreMissingRecordsRequestedHandler SendMissingRecordsRequested;        
 
         public string Id { get; private set; }
@@ -47,7 +46,7 @@ namespace Cow.Net.Core
         {
             if (string.IsNullOrEmpty(record.Id))
                 record.Id = DateTime.Now.Ticks.ToString();
-
+            
             var recordInMemory = Records.FirstOrDefault(r => r.Id.Equals(record.Id));
             if (recordInMemory != null)
             {
@@ -62,12 +61,9 @@ namespace Cow.Net.Core
             {
                 
             }
-
-            //Send Update to other peers
-            OnUpdateRecordRequested(record);
         }
 
-        internal void Sync(string identifier = null)
+        internal void SyncStore(string identifier = null)
         {
             OnSyncRequested(identifier); 
         }
@@ -99,7 +95,7 @@ namespace Cow.Net.Core
                 {
                     foreach (var subStore in SubStores)
                     {
-                        subStore.Sync(record.Id);
+                        subStore.SyncStore(record.Id);
                     }
                 }
             }
@@ -203,12 +199,6 @@ namespace Cow.Net.Core
         {
             var handler = SyncRequested;
             if (handler != null) handler(this, identifier);
-        }
-
-        protected virtual void OnUpdateRecordRequested(StoreRecord record)
-        {
-            var handler = UpdateRecordRequested;
-            if (handler != null) handler(this, record);
         }
 
         protected virtual void OnSendMissingRecordsRequested(string project, List<StoreRecord> records)
