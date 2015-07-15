@@ -114,7 +114,7 @@ namespace Cow.Net.Core.Models
         [JsonConverter(typeof(DataConverter))]
         public Dictionary<string, object> Data
         {
-            get { return _data; }
+            get { return _data ?? (_data = new Dictionary<string, object>()); }
             internal set
             {
                 _data = value;
@@ -210,7 +210,7 @@ namespace Cow.Net.Core.Models
             }
 
             Deleted = _newDeletedState != null ? _newDeletedState.Value : Deleted;
-            Updated = DateTime.Now.Ticks;
+            Updated = TimeUtils.GetMillisencondsFrom1970();
 
             ResetChanges();
             Dirty = false;

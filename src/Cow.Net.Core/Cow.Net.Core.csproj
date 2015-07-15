@@ -85,6 +85,7 @@
     <Compile Include="Utils\CowMessageFactory.cs" />
     <Compile Include="Utils\DataConverter.cs" />
     <Compile Include="Utils\DefaultRecords.cs" />
+    <Compile Include="Utils\TimeUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

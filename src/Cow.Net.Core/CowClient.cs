@@ -209,10 +209,13 @@ namespace Cow.Net.Core
 
             foreach (var storeRecord in peerStore.Records)
             {
+                if (storeRecord.Deleted || storeRecord.Data == null || !storeRecord.Data.ContainsKey("family") || !storeRecord.Data["family"].Equals("alpha"))
+                    continue;
+
                 if (oldest == null)
                     oldest = storeRecord;
 
-                if (storeRecord.Updated > oldest.Updated)
+                if (storeRecord.Created < oldest.Created)
                     oldest = storeRecord;
             }
 

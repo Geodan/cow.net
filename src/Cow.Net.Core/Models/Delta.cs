@@ -1,4 +1,5 @@
 ﻿using System;
+using Cow.Net.Core.Utils;
 using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
@@ -25,7 +26,7 @@ namespace Cow.Net.Core.Models
         public Delta(string userId, StoreRecord record)
         {
             UserId = userId;
-            TimeStamp = DateTime.Now.Ticks;
+            TimeStamp = TimeUtils.GetMillisencondsFrom1970();
             Deleted = record.Deleted;
             Data = record.Data;
         }

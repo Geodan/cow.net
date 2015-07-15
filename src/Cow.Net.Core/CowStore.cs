@@ -45,7 +45,7 @@ namespace Cow.Net.Core
         public void Add(StoreRecord record)
         {
             if (string.IsNullOrEmpty(record.Id))
-                record.Id = DateTime.Now.Ticks.ToString();
+                record.Id = TimeUtils.GetMillisencondsFrom1970().ToString();
             
             var recordInMemory = Records.FirstOrDefault(r => r.Id.Equals(record.Id));
             if (recordInMemory != null)

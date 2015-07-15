@@ -9,16 +9,22 @@ namespace Cow.Net.Core.Utils
     {
         public static StoreRecord CreatePeerRecord(ConnectionInfo connectionInfo)
         {
-            return new PeerRecord
+            var record = new PeerRecord
             {
                 Id = connectionInfo.PeerId,
-                Created = DateTime.Now.Ticks,
+                Created = TimeUtils.GetMillisencondsFrom1970(),
                 Data = null,
                 Deleted = false,
                 Deltas = new ObservableCollection<Delta>(),
-                Updated = DateTime.Now.Ticks,
+                Updated = TimeUtils.GetMillisencondsFrom1970(),
                 Dirty = true,
             };
+
+            record.Data.Add("userid", null);
+            record.Data.Add("family", "alpha");
+            record.Data.Add("version", CoreSettings.Instance.Version);
+
+            return record;
         }
     }
 }
