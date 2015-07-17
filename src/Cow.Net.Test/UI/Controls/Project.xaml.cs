@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using Cow.Net.Core;
 using Cow.Net.Core.Models;
 
 namespace Cow.Net.test.UI.Controls
@@ -49,7 +50,7 @@ namespace Cow.Net.test.UI.Controls
 
         private void BtnSaveOnClick(object sender, RoutedEventArgs e)
         {
-            _record.Sync();
+            _record.Sync(CoreSettings.Instance.CurrentUser != null ? CoreSettings.Instance.CurrentUser.Id : null);
         }
     }
 }

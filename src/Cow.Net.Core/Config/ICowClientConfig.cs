@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using Cow.Net.Core.Storage;
 
 namespace Cow.Net.Core.Config
@@ -8,6 +9,7 @@ namespace Cow.Net.Core.Config
         string Address { get; set; }
         string ServerKey { get; set; }
         bool IsAlphaPeer { get; set; }
+        TimeSpan MaxClientServerTimeDifference { get; set; }
         CowStoreManager CowStoreManager { get; set; }
         IStorageProvider StorageProvider { get; set; }
         SynchronizationContext SynchronizationContext { get; set; }

@@ -135,12 +135,24 @@ namespace Cow.Net.Core.Models
 
         internal void Update(StoreRecord record)
         {
-            record.Created = record.Created;
-            record.Data = record.Data;
-            record.Deleted = record.Deleted;
-            record.Deltas = record.Deltas;
-            record.Dirty = record.Dirty;
-            record.Updated = record.Updated;
+            if (!Created.Equals(record.Created))
+                Created = record.Created;
+
+            if (record.Data != null)
+                Data = record.Data;
+
+            if (Deleted != record.Deleted)
+                Deleted = record.Deleted;
+
+            if ((Deltas == null && record.Deltas != null && record.Deltas.Any()) || 
+               (Deltas != null && record.Deltas != null && Deltas.Count != record.Deltas.Count))
+                Deltas = record.Deltas;
+
+            if (Dirty != record.Dirty)
+                Dirty = record.Dirty;
+
+            if (!Updated.Equals(record.Updated))
+                Updated = record.Updated;
         }
 
         internal void CreateFirstDelta(string userId)
@@ -192,7 +204,7 @@ namespace Cow.Net.Core.Models
         /// <summary>
         /// Save Changes and push to other peers
         /// </summary>
-        public void Sync()
+        public void Sync(string userId)
         {
             if(!Dirty && !HasChanges)
                 return;
@@ -216,8 +228,8 @@ namespace Cow.Net.Core.Models
             newDeltaRecord.Dirty = Dirty;
             newDeltaRecord.Id = Id;
             newDeltaRecord.Updated = Updated;
-            
-            Deltas.Add(new Delta("", newDeltaRecord));
+
+            Deltas.Add(new Delta(userId, newDeltaRecord));
 
             if (_dataChangedQueue != null)
             {

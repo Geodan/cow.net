@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Cow.Net.Core.Config.Default.Stores;
 using Cow.Net.Core.Models;
@@ -14,6 +15,7 @@ namespace Cow.Net.Core.Config.Default
         public ProjectStore Projects { get; private set; }
 
         public string Address { get; set; }
+        public TimeSpan MaxClientServerTimeDifference { get; set; }
         public string ServerKey { get; set; }
         public bool IsAlphaPeer{ get; set; }
         public CowStoreManager CowStoreManager { get; set; }
@@ -34,6 +36,7 @@ namespace Cow.Net.Core.Config.Default
             ServerKey = serverKey;
             StorageProvider = storageProvider;
             IsAlphaPeer = isAlphaPeer;
+            MaxClientServerTimeDifference = TimeSpan.FromMinutes(5);
             SynchronizationContext = synchronizationContext;
             SetupStores();
         }

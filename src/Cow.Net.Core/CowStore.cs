@@ -114,7 +114,7 @@ namespace Cow.Net.Core
         }
 
         /// <summary>
-        /// A record got updated by a peer, update in memory and local storage
+        /// A new record or a record gets updated by a peer, update in memory and local storage
         /// </summary>        
         internal void HandleUpdatedRecord(CowMessage<UpdatedRecord> updatedRecord)
         {

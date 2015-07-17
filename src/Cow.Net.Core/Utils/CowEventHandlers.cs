@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Cow.Net.Core.Models;
 
 namespace Cow.Net.Core.Utils
@@ -24,6 +25,7 @@ namespace Cow.Net.Core.Utils
 
         //Other
         public delegate void CommandReceivedHandler(object sender, CowMessage<Command> commandMessage);
+        public delegate void CowErrorHandler(object sender, Exception e);
 
         //Collection
         public delegate void RecordCollectionChanged(

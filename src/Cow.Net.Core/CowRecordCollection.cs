@@ -32,7 +32,7 @@ namespace Cow.Net.Core
             var recordsToSync = _records.Where(storeRecord => storeRecord.HasChanges).ToList();
             foreach (var storeRecord in recordsToSync)
             {
-                storeRecord.Sync();
+                storeRecord.Sync(CoreSettings.Instance.CurrentUser != null ? CoreSettings.Instance.CurrentUser.Id : null);
             }
         }
 

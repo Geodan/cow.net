@@ -54,7 +54,9 @@
     <Compile Include="CowClient.cs" />
     <Compile Include="CowRecordCollection.cs" />
     <Compile Include="CowStoreManager.cs" />
+    <Compile Include="Exceptions\IncorrectCowServerVersion.cs" />
     <Compile Include="Exceptions\IncorrectServerKeyException.cs" />
+    <Compile Include="Exceptions\TimeDifferenceException.cs" />
     <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="MessageHandlers\CommandHandler.cs" />
     <Compile Include="MessageHandlers\NewListHandler.cs" />

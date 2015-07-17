@@ -25,7 +25,8 @@ namespace Cow.Net.Core
         public event CowEventHandlers.ConnectionErrorHandler CowSocketConnectionError;
         public event CowEventHandlers.ConnectionClosedHandler CowSocketDisconnected;
         public event CowEventHandlers.DatabaseErrorHandler CowDatabaseError;
-        public event CowEventHandlers.CommandReceivedHandler CowCommandReceived;        
+        public event CowEventHandlers.CommandReceivedHandler CowCommandReceived;
+        public event CowEventHandlers.CowErrorHandler CowError;
 
         public ICowClientConfig Config { get; private set; }
                 
@@ -231,7 +232,9 @@ namespace Cow.Net.Core
         private void HandleNewConnection(string message)
         {
             ConnectionInfo = ConnectedHandler.Handle(message);
-            CheckServerkey(ConnectionInfo);
+            if(CheckConnection(ConnectionInfo))
+                return;
+
             OnCowConnectionInfoReceived(ConnectionInfo);
             Config.CowStoreManager.GetPeerStore().Add(DefaultRecords.CreatePeerRecord(ConnectionInfo, Config.IsAlphaPeer));
             Sync();
@@ -267,12 +270,37 @@ namespace Cow.Net.Core
             return oldest != null && ConnectionInfo.PeerId.Equals(oldest.Id);
         }
 
-        private void CheckServerkey(ConnectionInfo connectionInfo)
+        private bool CheckConnection(ConnectionInfo connectionInfo)
         {
-            if (connectionInfo.ServerKey.Equals(Config.ServerKey)) return;
+            var error = false;
 
-            Disconnect();
-            throw new IncorrectServerKeyException(Config.ServerKey, connectionInfo.ServerKey);
+            //Check key
+            if (!connectionInfo.ServerKey.Equals(Config.ServerKey))
+            {             
+                OnCowError(new IncorrectServerKeyException(Config.ServerKey, connectionInfo.ServerKey));
+                error = true;
+            }
+
+            //Check time difference
+            if (Math.Abs(connectionInfo.ServerTime - TimeUtils.GetMillisencondsFrom1970()) > 
+                Config.MaxClientServerTimeDifference.TotalMilliseconds)
+            {
+                OnCowError(new TimeDifferenceException(TimeUtils.GetDateTimeFrom1970Milliseconds(connectionInfo.ServerTime),
+                    TimeUtils.GetDateTimeFrom1970Milliseconds(TimeUtils.GetMillisencondsFrom1970())));
+                error = true;
+            }
+
+            //Check server version
+            if (!connectionInfo.ServerVersion.Equals(CoreSettings.Instance.SupportedServerVerion))
+            {
+                OnCowError(new IncorrectCowServerVersion(connectionInfo.ServerVersion, CoreSettings.Instance.SupportedServerVerion));
+                error = true;
+            }           
+ 
+            if(error)
+                Disconnect();
+
+            return error;
         }
 
         private void SocketClientOnMessage(object sender, WebSocketSharp.MessageEventArgs e)
@@ -314,6 +342,12 @@ namespace Cow.Net.Core
         {
             var handler = CowCommandReceived;
             if (handler != null) handler(this, commandmessage);
+        }
+
+        private void OnCowError(Exception e)
+        {
+            var handler = CowError;
+            if (handler != null) handler(this, e);
         }
 
         [NotifyPropertyChangedInvocator]
