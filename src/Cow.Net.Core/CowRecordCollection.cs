@@ -36,6 +36,29 @@ namespace Cow.Net.Core
             }
         }
 
+        internal void Compare(List<StoreRecord> newListRecords, out List<StoreRecord> pushList, out List<StoreRecord> requestList)
+        {
+            pushList = new List<StoreRecord>();
+            requestList = new List<StoreRecord>();
+
+            foreach (var sendRecord in newListRecords)
+            {
+                StoreRecord foundRecord = null;
+                if (Records.Any(record => sendRecord.Id.Equals(record.Id)))
+                {
+                    foundRecord = sendRecord;
+                }
+
+                if(foundRecord == null || foundRecord.Updated < sendRecord.Updated)
+                    requestList.Add(sendRecord);
+
+                if(foundRecord != null && foundRecord.Updated > sendRecord.Updated)
+                    pushList.Add(foundRecord);
+            }
+
+            pushList.AddRange(from record in Records let found = newListRecords.Any(storeRecord => storeRecord.Id.Equals(record.Id)) where !found select record);
+        }
+
         internal void Add(StoreRecord record, string key = null)
         {
             AddRange(new List<StoreRecord>{record}, key);

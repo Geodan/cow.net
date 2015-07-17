@@ -5,7 +5,8 @@ namespace Cow.Net.Core.Config.Default.Stores
 {
     public class UserStore : CowStore
     {
-        public UserStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true) : base(id, syncType, subStores, saveToLocalDatabase)
+        public UserStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true, bool createDeltas = true)
+            : base(id, syncType, subStores, saveToLocalDatabase, createDeltas)
         {
         }
     }

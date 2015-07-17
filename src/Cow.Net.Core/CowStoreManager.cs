@@ -18,7 +18,7 @@ namespace Cow.Net.Core
         /// All main stores for the COW client
         /// </summary>
         public CowStoreManager(IEnumerable<CowStore> cowStores)            
-        {
+        {            
             MainStores = new List<CowStore>(cowStores);            
         }
 

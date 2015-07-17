@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using Cow.Net.Core.Config.Default.Records;
+﻿using System.Collections.ObjectModel;
 using Cow.Net.Core.Models;
 
 namespace Cow.Net.Core.Utils
 {
-    public class DefaultRecords
+    internal class DefaultRecords
     {
-        public static StoreRecord CreatePeerRecord(ConnectionInfo connectionInfo)
+        internal static StoreRecord CreatePeerRecord(ConnectionInfo connectionInfo, bool isAlphaPeer)
         {
-            var record = new PeerRecord
+            var record = new StoreRecord
             {
                 Id = connectionInfo.PeerId,
                 Created = TimeUtils.GetMillisencondsFrom1970(),
@@ -17,12 +15,15 @@ namespace Cow.Net.Core.Utils
                 Deleted = false,
                 Deltas = new ObservableCollection<Delta>(),
                 Updated = TimeUtils.GetMillisencondsFrom1970(),
-                Dirty = true,
+                Dirty = false,
             };
 
-            record.Data.Add("userid", null);
-            record.Data.Add("family", "alpha");
-            record.Data.Add("version", CoreSettings.Instance.Version);
+            if (isAlphaPeer)
+            {
+                record.Data.Add("userid", null);
+                record.Data.Add("family", "alpha");
+                record.Data.Add("version", CoreSettings.Instance.Version);
+            }
 
             return record;
         }

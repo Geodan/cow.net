@@ -3,9 +3,9 @@ using Newtonsoft.Json;
 
 namespace Cow.Net.Core.MessageHandlers
 {
-    public class CommandHandler
+    internal class CommandHandler
     {
-        public static CowMessage<Command> Handle(string message)
+        internal static CowMessage<Command> Handle(string message)
         {
             var commandMessage = JsonConvert.DeserializeObject<CowMessage<Command>>(message);
             return commandMessage;

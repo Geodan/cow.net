@@ -10,6 +10,7 @@
         wantedList,
         missingRecords,
         updatedRecord,
+        requestedRecords,
         Unknown
     }
 }

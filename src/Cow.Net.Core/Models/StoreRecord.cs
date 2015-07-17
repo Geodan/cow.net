@@ -141,7 +141,28 @@ namespace Cow.Net.Core.Models
             record.Deltas = record.Deltas;
             record.Dirty = record.Dirty;
             record.Updated = record.Updated;
-        }        
+        }
+
+        internal void CreateFirstDelta(string userId)
+        {
+            if(Deltas != null && Deltas.Any())
+                return;
+
+            var delta = new Delta
+            {
+                TimeStamp = TimeUtils.GetMillisencondsFrom1970(), 
+                Deleted = Deleted,
+                Data = Data
+            };
+
+            if (userId != null)
+                delta.UserId = userId;
+
+            if(Deltas == null)
+                Deltas =new ObservableCollection<Delta>();
+
+            Deltas.Add(delta);
+        }
 
         /// <summary>
         /// Update the data for this record
@@ -186,7 +207,7 @@ namespace Cow.Net.Core.Models
                     if (newDeltaRecord.Data == null)
                         newDeltaRecord.Data = new Dictionary<string, object>();
 
-                    newDeltaRecord.Data.Add(o.Key, Data[o.Key]);
+                    newDeltaRecord.Data.Add(o.Key, o.Value);
                 }
             }
 

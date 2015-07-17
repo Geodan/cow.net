@@ -10,8 +10,9 @@ namespace Cow.Net.Core.Config.Default.Stores
     public class ProjectStore : CowStore
     {        
         public event ProjectsChangedHandler ProjectsChanged;
-        
-        public ProjectStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true) : base(id, syncType, subStores, saveToLocalDatabase)
+
+        public ProjectStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true, bool createDeltas = true)
+            : base(id, syncType, subStores, saveToLocalDatabase, createDeltas)
         {
             CollectionChanged += ProjectStoreCollectionChanged;            
         }

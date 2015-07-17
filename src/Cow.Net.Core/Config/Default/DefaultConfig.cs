@@ -33,19 +33,20 @@ namespace Cow.Net.Core.Config.Default
             Address = address;
             ServerKey = serverKey;
             StorageProvider = storageProvider;
+            IsAlphaPeer = isAlphaPeer;
             SynchronizationContext = synchronizationContext;
             SetupStores();
         }
 
         private void SetupStores()
         {
-            Peers = new PeerStore("peers", SyncType.peers, null, false);
-            Users = new UserStore("users", SyncType.users);
-            SocketServers = new SocketServerStore("socketservers", SyncType.socketservers);
+            Peers = new PeerStore("peers", SyncType.peers, null, false, false);
+            Users = new UserStore("users", SyncType.users, null, true, false);
+            SocketServers = new SocketServerStore("socketservers", SyncType.socketservers, null, true, false);
             Projects = new ProjectStore("projects", SyncType.projects, new List<CowStore>
             {
                 new ItemStore("items", SyncType.items),
-                new GroupStore("groups", SyncType.groups)
+                new GroupStore("groups", SyncType.groups, null, true, false)
             });
 
             CowStoreManager = new CowStoreManager(new List<CowStore>

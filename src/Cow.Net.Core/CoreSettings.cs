@@ -12,6 +12,7 @@ namespace Cow.Net.Core
         public SynchronizationContext SynchronizationContext;
         public ConnectionInfo ConnectionInfo;
         public string Version = "2.0.5";
+        public StoreRecord CurrentUser { get; set; }
         public readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = true } } };        
 
         private CoreSettings() { }

@@ -4,9 +4,9 @@ using Newtonsoft.Json;
 
 namespace Cow.Net.Core.MessageHandlers
 {
-    public class WantedRecordsHandler
+    internal class WantedRecordsHandler
     {
-        public static void Handle(string message, CowStoreManager storeManager)
+        internal static void Handle(string message, CowStoreManager storeManager)
         {
             var wantedRecords = JsonConvert.DeserializeObject<CowMessage<WantedList>>(message);
             var storeId = wantedRecords.Payload.SyncType.ToString();

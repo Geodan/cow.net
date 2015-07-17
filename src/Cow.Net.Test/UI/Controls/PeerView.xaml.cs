@@ -31,6 +31,8 @@ namespace Cow.Net.test.UI.Controls
 
         private void UpdateList(IEnumerable<StoreRecord> records)
         {
+            var test = Peers.Records;
+
             foreach (var storeRecord in records)
             {
                 storeRecord.PropertyChanged += StoreRecordPropertyChanged;

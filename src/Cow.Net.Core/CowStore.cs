@@ -11,13 +11,16 @@ namespace Cow.Net.Core
     {
         public event CowEventHandlers.StoreSyncedHandler StoreSynced;
         public event CowEventHandlers.StoreSyncRequestedHandler SyncRequested;
-        public event CowEventHandlers.StoreMissingRecordsRequestedHandler SendMissingRecordsRequested;        
+        public event CowEventHandlers.StoreMissingRecordsRequestedHandler SendMissingRecordsRequested;
+        public event CowEventHandlers.StoreRequestedRecordsHandler RequestedRecordsRequested;        
 
+        //ToDo: Use either Id or SyncType preferably Id
         public string Id { get; private set; }
         public SyncType SyncType { get; private set; }        
         public bool IsSubStore { get; private set; }
         public List<CowStore> SubStores { get; private set; }
         public bool SaveToLocalDatabase { get; private set; }
+        public bool CreateDeltas { get; private set; }
 
         private int _subSyncsNeeded;
         private int _subSyncCount;
@@ -28,11 +31,13 @@ namespace Cow.Net.Core
         /// <param name="id">id of the store, relates to database table and cow synctype response</param>
         /// <param name="syncType">Type of store</param>
         /// <param name="subStores">List of substores for this Store i.e. Project substores -> Item, Groups </param>
-        /// <param name="saveToLocalDatabase">Default true = create table and save and laod from local storage</param>        
-        public CowStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true)
+        /// <param name="saveToLocalDatabase">Default true = create table and save and laod from local storage</param>
+        /// <param name="createDeltas"></param>        
+        public CowStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true, bool createDeltas = true)
         {
             Id = id;
             SaveToLocalDatabase = saveToLocalDatabase;
+            CreateDeltas = createDeltas;
             SyncType = syncType;
 
             if (subStores == null) return;
@@ -52,6 +57,9 @@ namespace Cow.Net.Core
             {
                 throw new Exception("Duplicate record");
             }
+
+            if (CreateDeltas)
+                record.CreateFirstDelta(CoreSettings.Instance.CurrentUser == null ? null : CoreSettings.Instance.CurrentUser.Id);
 
             //Add to memory
             base.Add(record);
@@ -124,7 +132,7 @@ namespace Cow.Net.Core
         internal void HandleWantedRecords(string project, CowMessage<WantedList> wantedRecords)
         {
             var wanted = wantedRecords.Payload.List.Select(s => Records.FirstOrDefault(r => r.Id.Equals(s))).Where(recordFromMemory => recordFromMemory != null).ToList();
-            OnSendMissingRecordsRequested(project, wanted);
+            OnRequestedRecordsRequested(project, wanted);
         }
 
         internal void LoadFromLocal()
@@ -204,6 +212,12 @@ namespace Cow.Net.Core
         protected virtual void OnSendMissingRecordsRequested(string project, List<StoreRecord> records)
         {
             var handler = SendMissingRecordsRequested;
+            if (handler != null) handler(this, project, records);
+        }
+
+        protected virtual void OnRequestedRecordsRequested(string project, List<StoreRecord> records)
+        {
+            var handler = RequestedRecordsRequested;
             if (handler != null) handler(this, project, records);
         }
     }

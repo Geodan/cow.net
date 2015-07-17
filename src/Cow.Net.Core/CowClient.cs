@@ -52,6 +52,13 @@ namespace Cow.Net.Core
             Initialize(Config.StorageProvider, Config.CowStoreManager, Config.Address);
         }
 
+        public void SetCurrentUser(StoreRecord userRecord)
+        {
+            //ToDo: update peer with user info
+
+            CoreSettings.Instance.CurrentUser = userRecord;
+        }
+
         public void Connect()
         {
             _socketClient.ConnectAsync();
@@ -73,6 +80,7 @@ namespace Cow.Net.Core
                 cowStore.SyncRequested += CowStoreSyncRequested;
                 cowStore.SyncRecordsRequested += CowStoreSyncRecordsRequested;
                 cowStore.SendMissingRecordsRequested += CowStoreSendMissingRecordsRequested;
+                cowStore.RequestedRecordsRequested += CowStoreRequestedRecordsRequested;
             }
         }
 
@@ -99,7 +107,16 @@ namespace Cow.Net.Core
             var store = sender as CowStore;
             if (store == null) return;
 
-            var jsonString = JsonSerialize(CowMessageFactory.CreateMissingRecordsMessage(ConnectionInfo, store.SyncType, project, records));
+            var jsonString = JsonSerialize(CowMessageFactory.CreateMissingRecordsMessage(store.SyncType, records, project, ConnectionInfo.PeerId));
+            _socketClient.Send(jsonString);
+        }
+
+        private void CowStoreRequestedRecordsRequested(object sender, string project, List<StoreRecord> records)
+        {
+            var store = sender as CowStore;
+            if (store == null) return;
+
+            var jsonString = JsonSerialize(CowMessageFactory.CreateRequestedMessage(store.SyncType, records, project, ConnectionInfo.PeerId));
             _socketClient.Send(jsonString);
         }
 
@@ -150,6 +167,10 @@ namespace Cow.Net.Core
         {
             dynamic d = JObject.Parse(message);
 
+            //Ignore broadcast to self
+            if(d.sender != null && d.sender.ToString().Equals(ConnectionInfo.PeerId) && (d.target == null || string.IsNullOrEmpty(d.target.ToString())))
+                return;
+
             // ReSharper disable once RedundantAssignment
             var action = Action.Unknown;
             if (d.action == null || !Enum.TryParse((string) d.action, out action))
@@ -160,28 +181,49 @@ namespace Cow.Net.Core
 
             switch (action)
             {
+                //websocket confirms connection by returning the unique peerID (targeted)
                 case Action.connected:
                     HandleNewConnection(message);
                     break;
+
+                //Received a command
                 case Action.command:
                     OnCowCommandReceived(CommandHandler.Handle(message));
                     break;
+
+                //you just joined and receive the records you are missing (targeted)
                 case Action.missingRecords:
                     MissingRecordsHandler.Handle(_socketClient, ConnectionInfo, message, Config.CowStoreManager);
                     break;
-                case Action.syncinfo: //What is going to sync                    
+
+                //you just joined and you receive info from the alpha peer on how much will be synced
+                case Action.syncinfo:                
                     break;
+
+                //a peer sends a new or updated record
                 case Action.updatedRecord:
                     UpdatedRecordsHandler.Handle(message, Config.CowStoreManager);
                     break;
-                case Action.wantedList: //List of items to broadcast
-                    Debug.WriteLine(message);
+
+                //you just joined and you receive a list of records the others want (targeted)
+                case Action.wantedList:
+                    WantedRecordsHandler.Handle(message, Config.CowStoreManager);
                     break;
+
+                //a new peer has arrived and sends everybody the records that are requested in the *wantedList*
+                case Action.requestedRecords:
+                    MissingRecordsHandler.Handle(_socketClient, ConnectionInfo, message, Config.CowStoreManager);
+                    break;
+
+                //messenger tells everybody a peer has gone, with ID: peerID
                 case Action.peerGone:
                     PeerGonehandler.Handle(message, Config.CowStoreManager);
                     break;
+
+                //a new peer has arrived and gives a list of its records
                 case Action.newList:
-                    var amiAlpha = AmIAlpha();
+                    if (AmIAlpha())                    
+                        NewListHandler.Handle(ConnectionInfo.PeerId, message, Config.CowStoreManager, _socketClient);                    
                     break;
             }
         }
@@ -191,14 +233,13 @@ namespace Cow.Net.Core
             ConnectionInfo = ConnectedHandler.Handle(message);
             CheckServerkey(ConnectionInfo);
             OnCowConnectionInfoReceived(ConnectionInfo);
-            Config.CowStoreManager.GetPeerStore().Add(DefaultRecords.CreatePeerRecord(ConnectionInfo));
-            Config.CowStoreManager.GetPeerStore().SyncRecords();
+            Config.CowStoreManager.GetPeerStore().Add(DefaultRecords.CreatePeerRecord(ConnectionInfo, Config.IsAlphaPeer));
             Sync();
         }
 
         private bool AmIAlpha()
         {
-            if (Config.IsAlphaPeer)
+            if (!Config.IsAlphaPeer)
                 return false;
 
             var peerStore = Config.CowStoreManager.GetPeerStore();
@@ -206,6 +247,10 @@ namespace Cow.Net.Core
                 return false;
 
             StoreRecord oldest = null;
+
+            //Don't send to self
+            if (peerStore.Records.Count == 1 && peerStore.Records[0].Id.Equals(ConnectionInfo.PeerId))
+                return false;
 
             foreach (var storeRecord in peerStore.Records)
             {
@@ -219,7 +264,7 @@ namespace Cow.Net.Core
                     oldest = storeRecord;
             }
 
-            return ConnectionInfo.PeerId.Equals(oldest.Id);
+            return oldest != null && ConnectionInfo.PeerId.Equals(oldest.Id);
         }
 
         private void CheckServerkey(ConnectionInfo connectionInfo)

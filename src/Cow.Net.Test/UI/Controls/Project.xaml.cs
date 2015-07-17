@@ -6,7 +6,7 @@ namespace Cow.Net.test.UI.Controls
     public partial class Project
     {
         private readonly StoreRecord _record;
-        private readonly bool _initializing;
+        private bool _initializing;
 
         public Project(StoreRecord record)
         {
@@ -17,8 +17,18 @@ namespace Cow.Net.test.UI.Controls
             _record = record;
             TxtProjectName.Text = _record.Data["name"].ToString();
             CbDeleted.IsChecked = _record.Deleted;
-
+            _record.PropertyChanged += RecordPropertyChanged;
             _initializing = false;
+        }
+
+        private void RecordPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName.ToLower().Equals("deleted"))
+            {
+                _initializing = true;
+                CbDeleted.IsChecked = _record.Deleted;
+                _initializing = false;
+            }
         }
 
         private void CbDeleted_OnChecked(object sender, RoutedEventArgs e)
