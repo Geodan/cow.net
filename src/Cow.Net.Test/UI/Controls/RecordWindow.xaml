@@ -1,0 +1,62 @@
+﻿<Window x:Class="Cow.Net.test.UI.Controls.RecordWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Record" Icon="../../Resources/Images/cow.ico" Width="550" Height="650" >
+    <Window.Background>
+        <VisualBrush TileMode="Tile" Viewport="0,0,9,37" ViewportUnits="Absolute">
+            <VisualBrush.Visual>
+                <Image Source="../../Resources/Images/bg_pattern.jpg"></Image>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Window.Background>
+    <ScrollViewer>
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Text="Id" Grid.Row="0" Grid.Column="0" Foreground="{StaticResource Brush02}" Margin="3" />
+            <TextBox x:Name="TxtId" IsEnabled="False" Grid.Row="0" Grid.Column="1" Foreground="{StaticResource Brush02}" Margin="3" />
+            <TextBlock Text="Created" Grid.Row="1" Grid.Column="0" Foreground="{StaticResource Brush02}" Margin="3" />
+            <TextBox x:Name="TxtCreated" IsEnabled="False" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource Brush02}" Margin="3" />
+            <TextBlock Text="Updated" Grid.Row="2" Grid.Column="0" Foreground="{StaticResource Brush02}" Margin="3" />
+            <TextBox x:Name="TxtUpdated" IsEnabled="False" Grid.Row="2" Grid.Column="1" Foreground="{StaticResource Brush02}" Margin="3" />
+            <TextBlock Text="Deleted" Grid.Row="3" Grid.Column="0" Foreground="{StaticResource Brush02}" Margin="3" />
+            <CheckBox x:Name="CbDeleted" Grid.Row="3" Grid.Column="1" Margin="0,3,0,-10" />
+            <TextBlock Text="Data" Grid.Row="4" Grid.Column="0" Foreground="{StaticResource Brush02}" Margin="3" />        
+            <Grid  Grid.Row="4" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Row="0" x:Name="DataStack" />
+                <Button Grid.Row="1" x:Name="BtnAddData" Content="Add" Width="120" HorizontalAlignment="Right" Margin="5" Click="BtnAddData_OnClick" />
+            </Grid>
+            <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,5,5,5" >
+                <StackPanel Orientation="Horizontal" >
+                    <Button x:Name="BtnCancel" Content="Cancel" Width="100" Margin="0,0,5,0" Click="BtnCancel_OnClick" />
+                    <Button x:Name="BtnSave" Content="Save" Width="100" Click="BtnSave_OnClick" />
+                </StackPanel>
+            </Grid>
+            <StackPanel Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2">
+                <TextBlock Text="Deltas" Foreground="{StaticResource Brush02}" Margin="3" />
+                <Rectangle HorizontalAlignment="Stretch" Height="1" Margin="3" Fill="{StaticResource Brush03}"></Rectangle>
+                <StackPanel  x:Name="DeltaStack" Margin="3">
+                    <TextBlock Text="No deltas for item" Foreground="{StaticResource Brush02}" Margin="3" FontSize="10" />    
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </ScrollViewer>
+</Window>

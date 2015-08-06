@@ -1,22 +1,21 @@
 ﻿using System;
 using Cow.Net.Core.Models;
 using Newtonsoft.Json;
-using WebSocketSharp;
 
 namespace Cow.Net.Core.MessageHandlers
 {
-    internal class MissingRecordsHandler
+    internal class MissingRecordHandler
     {
-        internal static void Handle(WebSocket socket, ConnectionInfo connectionInfo, string message, CowStoreManager storeManager)
+        internal static void Handle(ConnectionInfo connectionInfo, string message, CowStoreManager storeManager)
         {
-            var missingRecords = JsonConvert.DeserializeObject<CowMessage<NewList>>(message);         
+            var missingRecords = JsonConvert.DeserializeObject<CowMessage<RecordPayload>>(message);
             var storeId = missingRecords.Payload.SyncType.ToString();
             var store = storeManager.GetStoreById(storeId);
             
             if(store == null)
                 throw new Exception(string.Format("A store is not configured (correctly): {0}", storeId));
 
-            store.HandleMissingRecords(socket, connectionInfo, missingRecords);
+            store.HandleMissingRecord(connectionInfo, missingRecords);
         }
     }
 }

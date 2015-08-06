@@ -1,7 +1,18 @@
 ﻿<?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="uri:settings" CurrentProfile="(Default)">
-  <Profiles>
-    <Profile Name="(Default)" />
-  </Profiles>
-  <Settings />
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Cow.Net.test.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="server" Type="System.String" Scope="User">
+      <Value Profile="(Default)">wss://websocket.geodan.nl:443/eagle</Value>
+    </Setting>
+    <Setting Name="isAlpha" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="databaseLocation" Type="System.String" Scope="User">
+      <Value Profile="(Default)">c:/cow.sqlite3</Value>
+    </Setting>
+    <Setting Name="serverKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">eagle</Value>
+    </Setting>
+  </Settings>
 </SettingsFile>

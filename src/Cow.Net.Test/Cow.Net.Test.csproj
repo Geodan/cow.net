@@ -40,8 +40,15 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Controls.Input.Toolkit">
+      <HintPath>..\packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\System.Windows.Controls.Input.Toolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows.Controls.Layout.Toolkit">
+      <HintPath>..\packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\System.Windows.Controls.Layout.Toolkit.dll</HintPath>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,32 +58,46 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="websocket-sharp, Version=1.0.2.29252, Culture=neutral, PublicKeyToken=5660b08a1845a91e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WebSocketSharp.1.0.3-rc8\lib\websocket-sharp.dll</HintPath>
+    </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WPFToolkit">
+      <HintPath>..\packages\Infragistics.Themes.MetroDark.Wpf.1.0.0\lib\net40\WPFToolkit.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CowSettings.cs" />
+    <Compile Include="UI\Controls\DataControl.xaml.cs">
+      <DependentUpon>DataControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\DeltaControl.xaml.cs">
+      <DependentUpon>DeltaControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\Controls\RecordWindow.xaml.cs">
+      <DependentUpon>RecordWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\ConnectionInfoView.xaml.cs">
       <DependentUpon>ConnectionInfoView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\PeerView.xaml.cs">
-      <DependentUpon>PeerView.xaml</DependentUpon>
+    <Compile Include="UI\Controls\RecordView.xaml.cs">
+      <DependentUpon>RecordView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\Project.xaml.cs">
-      <DependentUpon>Project.xaml</DependentUpon>
+    <Compile Include="UI\Controls\SocketMessageWindow.xaml.cs">
+      <DependentUpon>SocketMessageWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\ProjectView.xaml.cs">
-      <DependentUpon>ProjectView.xaml</DependentUpon>
+    <Compile Include="UI\Controls\Start.xaml.cs">
+      <DependentUpon>Start.xaml</DependentUpon>
     </Compile>
-    <Compile Include="UI\Controls\SocketServerView.xaml.cs">
-      <DependentUpon>SocketServerView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="UI\Controls\UserView.xaml.cs">
-      <DependentUpon>UserView.xaml</DependentUpon>
+    <Compile Include="UI\Controls\StoreView.xaml.cs">
+      <DependentUpon>StoreView.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -90,27 +111,55 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Themes\MetroDark\MetroDark.MSControls.Core.Implicit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\MetroDark\MetroDark.MSControls.Toolkit.Implicit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\MetroDark\Styles.Shared.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\MetroDark\Styles.WPF.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\MetroDark\Theme.Colors.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="UI\Controls\DataControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\DeltaControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\Controls\RecordWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\Controls\ConnectionInfoView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\PeerView.xaml">
+    <Page Include="UI\Controls\RecordView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\Project.xaml">
+    <Page Include="UI\Controls\SocketMessageWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\ProjectView.xaml">
+    <Page Include="UI\Controls\Start.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="UI\Controls\SocketServerView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="UI\Controls\UserView.xaml">
+    <Page Include="UI\Controls\StoreView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -156,6 +205,28 @@
       <Project>{624760b4-c672-4b8f-805f-b2daef85e2c3}</Project>
       <Name>Cow.Net.SQLiteStorageProvider.Net45</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\bg_pattern.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Themes\MetroDark\HowToApplyTheme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\cow.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\cow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\cow_small.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\add_button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\collapsible_down.png" />
+    <Resource Include="Resources\Images\collapsible_up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

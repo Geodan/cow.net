@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="Cow.Net.test.UI.Controls.RecordView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"  Margin="4" Foreground="{StaticResource Brush03}">
+    <Grid MouseLeftButtonDown="UIElement_OnMouseLeftButtonDown">
+        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="{StaticResource Brush05}" BorderBrush="{StaticResource Brush04}" BorderThickness="1" />
+        <Grid Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"  />
+                <ColumnDefinition Width="*"  />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" >
+                <CheckBox x:Name="CbDeleted" Checked="CbDeleted_OnChecked" Unchecked="CbDeleted_OnUnchecked" VerticalAlignment="Center" Margin="-8,0,-12,-12" />
+                <TextBlock x:Name="TxtProjectName" FontWeight="Bold" Text="TEST" TextWrapping="Wrap" Margin="5,0,0,0" />                
+            </StackPanel>
+            <TextBlock Grid.Row="0" Grid.Column="1" x:Name="TxtCreated" Text="12-11-109" Margin="5,0,0,0" HorizontalAlignment="Right" VerticalAlignment="Top" FontSize="10" />
+            <TextBlock Grid.Row="1" Grid.Column="0" x:Name="TxtDeltas" Text="5" />
+            <TextBlock Grid.Row="1" Grid.Column="1" x:Name="TxtUpdated" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,0,0,0" />  
+            <StackPanel x:Name="SubStoreList" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"></StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

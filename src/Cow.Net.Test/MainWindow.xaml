@@ -2,16 +2,64 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:controls="clr-namespace:Cow.Net.test.UI.Controls"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        <ScrollViewer>
-            <StackPanel>
-                <controls:ConnectionInfoView x:Name="ConnectionInfoView" HorizontalAlignment="Stretch"/>
-                <controls:SocketServerView x:Name="SocketServerView" />
-                <controls:PeerView x:Name="PeerView" />
-                <controls:ProjectView x:Name="ProjectView" />
-                <controls:UserView x:Name="UserView" />
-            </StackPanel>
+        Title="cow.net" Height="650" Width="465" Icon="Resources/Images/cow.ico" >
+    <Window.Background>
+        <VisualBrush TileMode="Tile" Viewport="0,0,9,37" ViewportUnits="Absolute">
+            <VisualBrush.Visual>
+                <Image Source="Resources/Images/bg_pattern.jpg"></Image>
+            </VisualBrush.Visual>
+        </VisualBrush>
+    </Window.Background>
+    <Grid >        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid x:Name="TopGrid" Visibility="Collapsed" Grid.Row="0" Background="{StaticResource Brush04}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>            
+            <Image Grid.Row="0" Grid.Column="0" Margin="3" Source="/Cow.Net.Test;component/Resources/Images/cow_small.png" Width="26" Height="26" />
+            <TextBlock Grid.Row="0" Grid.Column="1" Margin="5,0,0,0" Text="C O W . N E T"  Foreground="{StaticResource Brush01}" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="20" FontWeight="Bold" FontFamily="Segoe 360" />
+            <Rectangle Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Stretch" Height="1" Stroke="{StaticResource Brush03}" StrokeThickness="1" />
+        </Grid>
+        <ScrollViewer Grid.Row="1" >
+            <Grid>
+                <controls:Start x:Name="StartScreen" StartClicked="StartScreenOnStartClicked" Margin="0" />
+                <StackPanel x:Name="CowContent" Visibility="Collapsed">
+                    <controls:ConnectionInfoView x:Name="ConnectionInfoView" HorizontalAlignment="Stretch" Margin="5,10,5,10"/>
+                    <StackPanel x:Name="StoreList" />
+                </StackPanel>
+            </Grid>
         </ScrollViewer>
+        <Grid x:Name="ControlGrid" Visibility="Collapsed" Grid.Row="2" Margin="0" Background="{StaticResource Brush04}" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Rectangle Grid.Column="0" Grid.ColumnSpan="4" Height="1" HorizontalAlignment="Stretch" StrokeThickness="1" Stroke="{StaticResource Brush03}" VerticalAlignment="Top" />
+            <Button Grid.Column="0" Height="20" x:Name="BtnBack" Click="BtnBackOnClick" Margin="5">
+                <TextBlock FontSize="30" Text="←" Margin="0,-5,0,0" />
+            </Button>
+            <Button Grid.Column="1" Height="20" x:Name="BtnConnection" Click="BtnConnectionOnClick"  Content="connect" Margin="5" />
+            <Button Grid.Column="2" Height="20" x:Name="BtnLog" Click="BtnLog_OnClick"  Content="msg" Margin="5" />
+            <Ellipse x:Name="ElConnected" Visibility="Collapsed" Grid.Column="3" HorizontalAlignment="Right" Margin="5,-6,5,5" 
+                         Width="15" Height="15" Fill="Chartreuse" StrokeThickness="1" Stroke="{StaticResource Brush05}" />
+            <Ellipse x:Name="ElDisconnected" Grid.Column="3" HorizontalAlignment="Right" Margin="5,-6,5,5" 
+                         Width="15" Height="15" Fill="Crimson" StrokeThickness="1" Stroke="{StaticResource Brush05}" />
+            <Grid Grid.Column="3" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="TxtMemoryUsage" Text="" Foreground="{StaticResource Brush03}" FontSize="10" Margin="2,0,5,3" HorizontalAlignment="Right" VerticalAlignment="Bottom" />
+                </StackPanel>
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

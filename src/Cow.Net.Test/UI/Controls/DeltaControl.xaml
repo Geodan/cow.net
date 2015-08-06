@@ -1,0 +1,32 @@
+﻿<UserControl x:Class="Cow.Net.test.UI.Controls.DeltaControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" >
+    <Grid Background="{StaticResource Brush04}" Margin="5">
+        <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="Timestamp" Grid.Row="0" Grid.Column="0" Foreground="{StaticResource Brush03}" FontWeight="Bold" />
+        <TextBlock x:Name="TxtTimestamp" Text="Timestamp" Grid.Row="0" Grid.Column="1" Foreground="{StaticResource Brush03}" Margin="5,0,0,0" />
+            <TextBlock Text="User" Grid.Row="1" Grid.Column="0" Foreground="{StaticResource Brush03}" FontWeight="Bold" />
+        <TextBlock x:Name="TxtUser" Text="-" Grid.Row="1" Grid.Column="1" Foreground="{StaticResource Brush03}" Margin="5,0,0,0" />
+            <TextBlock Text="Deleted" Grid.Row="2" Grid.Column="0" Foreground="{StaticResource Brush03}" FontWeight="Bold" />
+        <TextBlock x:Name="TxtDeleted" Text="-" Grid.Row="2" Grid.Column="1" Foreground="{StaticResource Brush03}" Margin="5,0,0,0" />
+        <Rectangle Grid.Row="3" Fill="{StaticResource Brush03}" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Height="1" Margin="5" VerticalAlignment="Bottom" />
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
+            <StackPanel x:Name="DataStack"></StackPanel>
+        </Grid>
+    </Grid>
+    </Grid>
+</UserControl>

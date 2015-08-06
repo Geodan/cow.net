@@ -13,14 +13,19 @@ namespace Cow.Net.Core
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public event CowEventHandlers.RecordCollectionChanged CollectionChanged;
-        public event CowEventHandlers.RecordSyncToPeersRequested SyncRecordsRequested;
+        public event CowEventHandlers.RecordSyncToPeersRequested SyncRecordRequested;
+
+        public string Id { get; private set; }
+        public bool SupportsDeltas { get; private set; }
 
         private readonly List<StoreRecord> _records;
 
-        public CowRecordCollection()
+        public CowRecordCollection(string id, bool supportsDeltas)
         {
+            Id = id;
+            SupportsDeltas = supportsDeltas;
             _records = new List<StoreRecord>();
-        }
+        }        
 
         public ReadOnlyCollection<StoreRecord> Records
         {
@@ -32,11 +37,19 @@ namespace Cow.Net.Core
             var recordsToSync = _records.Where(storeRecord => storeRecord.HasChanges).ToList();
             foreach (var storeRecord in recordsToSync)
             {
-                storeRecord.Sync(CoreSettings.Instance.CurrentUser != null ? CoreSettings.Instance.CurrentUser.Id : null);
+                storeRecord.Sync();
             }
         }
 
-        internal void Compare(List<StoreRecord> newListRecords, out List<StoreRecord> pushList, out List<StoreRecord> requestList)
+        internal void Clear()
+        {
+            var temp = new StoreRecord[_records.Count];
+            _records.CopyTo(temp);
+            _records.Clear();
+            OnCollectionChanged(new List<StoreRecord>(), temp.ToList());
+        }
+
+        internal void Compare(List<StoreRecord> newListRecords, out List<StoreRecord> pushList, out List<StoreRecord> requestList, string projectId)
         {
             pushList = new List<StoreRecord>();
             requestList = new List<StoreRecord>();
@@ -52,8 +65,12 @@ namespace Cow.Net.Core
                 if(foundRecord == null || foundRecord.Updated < sendRecord.Updated)
                     requestList.Add(sendRecord);
 
-                if(foundRecord != null && foundRecord.Updated > sendRecord.Updated)
-                    pushList.Add(foundRecord);
+                if (foundRecord != null && foundRecord.Updated > sendRecord.Updated)
+                {
+                    if(string.IsNullOrEmpty(projectId) || foundRecord.Identifier.Equals(projectId))
+                        pushList.Add(foundRecord);
+                }
+                    
             }
 
             pushList.AddRange(from record in Records let found = newListRecords.Any(storeRecord => storeRecord.Id.Equals(record.Id)) where !found select record);
@@ -71,39 +88,40 @@ namespace Cow.Net.Core
 
             foreach (var storeRecord in records)
             {
+                storeRecord.SupportsDeltas = SupportsDeltas;
                 storeRecord.SyncToPeersRequested += StoreRecordSyncToPeersRequested;
             }
 
             _records.AddRange(records);
-            OnCollectionChanged(records, key);
+            OnCollectionChanged(records, new List<StoreRecord>());
         }
 
         private void StoreRecordSyncToPeersRequested(object sender, StoreRecord records)
         {
-            OnSyncRecordsRequested(records);
+            OnSyncRecordRequested(records);
         }
 
-        protected virtual void OnCollectionChanged(List<StoreRecord> newrecords, string key)
+        protected virtual void OnCollectionChanged(List<StoreRecord> newrecords, List<StoreRecord> removedRecords)
         {
             var handler = CollectionChanged;
             if(handler == null)
                 return;
 
             if (CoreSettings.Instance.SynchronizationContext != null)
-            {            
-                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, newrecords, key),  null);
+            {
+                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, newrecords, removedRecords), null);
             }
             else
             {
-                handler(this, newrecords, key);                
+                handler(this, newrecords, removedRecords);                
             }
 
             OnPropertyChanged("Records");
         }        
 
-        protected virtual void OnSyncRecordsRequested(StoreRecord record)
+        protected virtual void OnSyncRecordRequested(StoreRecord record)
         {
-            var handler = SyncRecordsRequested;
+            var handler = SyncRecordRequested;
             if (handler != null) handler(this, record);
         }
 

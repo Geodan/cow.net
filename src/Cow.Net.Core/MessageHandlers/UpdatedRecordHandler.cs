@@ -4,11 +4,11 @@ using Newtonsoft.Json;
 
 namespace Cow.Net.Core.MessageHandlers
 {
-    internal class UpdatedRecordsHandler
+    internal class UpdatedRecordHandler
     {
         internal static void Handle(string message, CowStoreManager storeManager)
         {
-            var updatedRecord = JsonConvert.DeserializeObject<CowMessage<UpdatedRecord>>(message);
+            var updatedRecord = JsonConvert.DeserializeObject<CowMessage<RecordPayload>>(message);
 
             var storeId = updatedRecord.Payload.SyncType.ToString();
             var store = storeManager.GetStoreById(storeId);

@@ -2,7 +2,7 @@
 
 namespace Cow.Net.Core.Models
 {
-    public class UpdatedRecord
+    public class RecordPayload
     {
         [JsonProperty("syncType")]
         public SyncType SyncType { get; set; }

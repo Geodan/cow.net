@@ -12,6 +12,6 @@ namespace Cow.Net.Core.Utils
         public static DateTime GetDateTimeFrom1970Milliseconds(long milliseconds)
         {
             return new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc) + TimeSpan.FromMilliseconds(milliseconds);
-        }
+        }        
     }
 }

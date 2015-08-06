@@ -19,7 +19,7 @@ namespace Cow.Net.Core
         /// </summary>
         public CowStoreManager(IEnumerable<CowStore> cowStores)            
         {            
-            MainStores = new List<CowStore>(cowStores);            
+            MainStores = new List<CowStore>(cowStores);
         }
 
         /// <summary>

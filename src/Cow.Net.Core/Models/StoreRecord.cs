@@ -11,17 +11,17 @@ namespace Cow.Net.Core.Models
 {
     public class StoreRecord : INotifyPropertyChanged
     {        
-        private Dictionary<string, CowRecordCollection> _subRecords;
+        private Dictionary<string, CowStore> _subRecords;
 
         public event PropertyChangedEventHandler PropertyChanged;
         public event CowEventHandlers.RecordSyncToPeersRequested SyncToPeersRequested;        
 
         [JsonIgnore]
-        public ReadOnlyDictionary<string, CowRecordCollection> SubRecordCollection
+        public ReadOnlyDictionary<string, CowStore> SubRecordCollection
         {
             get
             {
-                return new ReadOnlyDictionary<string, CowRecordCollection>(_subRecords);
+                return _subRecords == null ? null : new ReadOnlyDictionary<string, CowStore>(_subRecords);
             }
         }
         
@@ -34,7 +34,37 @@ namespace Cow.Net.Core.Models
         private bool? _newDeletedState;
         private Dictionary<string, object> _data;
         private Dictionary<string, object> _dataChangedQueue;
+        private Dictionary<string, object> _dataAddedQueue;
         private ObservableCollection<Delta> _deltas;
+
+        internal StoreRecord()
+        {
+            
+        }
+
+        public StoreRecord(string id = null, Dictionary<string, object> data = null)
+        {
+            var now = TimeUtils.GetMillisencondsFrom1970();
+            if (string.IsNullOrEmpty(id))
+                id = now.ToString();
+
+            Data = data;
+            Dirty = true;
+            Id = id;
+            Created = now;
+        }
+
+        public StoreRecord(string id, string projectId, long created, bool deleted, long updated, bool dirty, Dictionary<string, object> data, ObservableCollection<Delta> deltas)
+        {
+            Id = id;
+            Identifier = projectId;
+            Created = created;
+            Deleted = deleted;
+            Updated = updated;
+            Dirty = dirty;
+            Data = data;            
+            Deltas = deltas;
+        }
 
         [JsonProperty("_id")]
         public string Id
@@ -62,9 +92,12 @@ namespace Cow.Net.Core.Models
         public bool HasChanges
         {
             get {
-                return (Dirty || _dataChangedQueue != null && _dataChangedQueue.Any()) || (_newDeletedState != null && _newDeletedState != Deleted);
+                return (_dataChangedQueue != null && _dataChangedQueue.Any()) || (_dataAddedQueue != null && _dataAddedQueue.Any()) || (_newDeletedState != null && _newDeletedState != Deleted);
             }
         }
+
+        [JsonIgnore]
+        public bool SupportsDeltas { get; internal set; }
 
         [JsonProperty("dirty")]
         public bool Dirty
@@ -141,6 +174,9 @@ namespace Cow.Net.Core.Models
             if (record.Data != null)
                 Data = record.Data;
 
+            if (Identifier != record.Identifier || (Identifier != null && record.Identifier != null && !Identifier.Equals(record.Identifier)))
+                Identifier = record.Identifier;
+
             if (Deleted != record.Deleted)
                 Deleted = record.Deleted;
 
@@ -148,15 +184,15 @@ namespace Cow.Net.Core.Models
                (Deltas != null && record.Deltas != null && Deltas.Count != record.Deltas.Count))
                 Deltas = record.Deltas;
 
-            if (Dirty != record.Dirty)
-                Dirty = record.Dirty;
-
             if (!Updated.Equals(record.Updated))
                 Updated = record.Updated;
         }
 
         internal void CreateFirstDelta(string userId)
         {
+            if (!SupportsDeltas)
+                return;
+
             if(Deltas != null && Deltas.Any())
                 return;
 
@@ -190,11 +226,37 @@ namespace Cow.Net.Core.Models
             if (_dataChangedQueue == null)
                 _dataChangedQueue = new Dictionary<string, object>();
 
+            if (JsonConvert.SerializeObject(Data[key]).Equals(JsonConvert.SerializeObject(value)))
+                return;
+
             if (_dataChangedQueue.ContainsKey(key))
+            {
                 _dataChangedQueue[key] = value;
+                return;
+            }
 
             _dataChangedQueue.Add(key, value);
-        }        
+        }
+
+        public void AddData(string key, object value)
+        {
+            if (Data.ContainsKey(key))
+            {
+                UpdateData(key, value);
+                return;
+            }
+
+            if (_dataAddedQueue == null)
+                _dataAddedQueue = new Dictionary<string, object>();
+
+            if (_dataAddedQueue.ContainsKey(key))
+            {
+                _dataAddedQueue[key] = value;
+                return;
+            }
+
+            _dataAddedQueue.Add(key, value);
+        }
 
         public void SetDeleted(bool deleted)
         {
@@ -204,32 +266,45 @@ namespace Cow.Net.Core.Models
         /// <summary>
         /// Save Changes and push to other peers
         /// </summary>
-        public void Sync(string userId)
+        public void Sync()
         {
             if(!Dirty && !HasChanges)
                 return;
 
-            //Create delta
-            var newDeltaRecord = new StoreRecord();
-
-            if (_dataChangedQueue != null)
+            var user = CoreSettings.Instance.CurrentUser == null ? null : CoreSettings.Instance.CurrentUser.Id;
+            if (!Dirty && HasChanges && SupportsDeltas)
             {
-                foreach (var o in _dataChangedQueue)
-                {
-                    if (newDeltaRecord.Data == null)
-                        newDeltaRecord.Data = new Dictionary<string, object>();
+                //Create delta
+                var newDeltaRecord = new Delta();
 
-                    newDeltaRecord.Data.Add(o.Key, o.Value);
+                if (_dataChangedQueue != null)
+                {
+                    foreach (var o in _dataChangedQueue)
+                    {
+                        if (newDeltaRecord.Data == null)
+                            newDeltaRecord.Data = new Dictionary<string, object>();
+
+                        newDeltaRecord.Data.Add(o.Key, o.Value);
+                    }
                 }
+
+                newDeltaRecord.Deleted = Deleted;
+                newDeltaRecord.UserId = user;
+                newDeltaRecord.TimeStamp = TimeUtils.GetMillisencondsFrom1970();
+
+                Deltas.Add(newDeltaRecord);
             }
 
-            newDeltaRecord.Created = Created;
-            newDeltaRecord.Deleted = Deleted;
-            newDeltaRecord.Dirty = Dirty;
-            newDeltaRecord.Id = Id;
-            newDeltaRecord.Updated = Updated;
+            if (_dataAddedQueue != null)
+            {
+                foreach (var o in _dataAddedQueue)
+                {
+                    if (Data == null)
+                        Data = new Dictionary<string, object>();
 
-            Deltas.Add(new Delta(userId, newDeltaRecord));
+                    Data.Add(o.Key, o.Value);
+                }
+            }
 
             if (_dataChangedQueue != null)
             {
@@ -238,8 +313,13 @@ namespace Cow.Net.Core.Models
                     if (Data == null)
                         Data = new Dictionary<string, object>();
 
-                    Data.Add(o.Key, o.Value);
+                    Data[o.Key] = o.Value;                   
                 }
+            }
+
+            if (Dirty && SupportsDeltas)
+            {
+                CreateFirstDelta(user);
             }
 
             Deleted = _newDeletedState != null ? _newDeletedState.Value : Deleted;
@@ -251,21 +331,22 @@ namespace Cow.Net.Core.Models
             OnSyncToPeersRequested(this);
         }
 
-        public void ResetChanges()
+        internal void ResetChanges()
         {
+            _dataAddedQueue = null;
             _dataChangedQueue = null;
             _newDeletedState = null;
         }
 
-        internal void AddSubRecordList(string id)
-        {            
-            if(_subRecords != null && _subRecords.ContainsKey(id))
+        internal void AddSubRecordList(CowStore cowStore, string linkedStoreId)
+        {
+            if (_subRecords != null && _subRecords.ContainsKey(cowStore.Id))
                 return;
 
             if(_subRecords == null)
-                _subRecords = new Dictionary<string, CowRecordCollection>();
+                _subRecords = new Dictionary<string, CowStore>();
 
-            _subRecords.Add(id, new CowRecordCollection());
+            _subRecords.Add(cowStore.Id, new CowStore(cowStore, linkedStoreId));
         }        
 
         protected virtual void OnSyncToPeersRequested(StoreRecord record)

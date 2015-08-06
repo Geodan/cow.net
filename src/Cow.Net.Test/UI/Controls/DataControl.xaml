@@ -1,0 +1,24 @@
+﻿<UserControl x:Class="Cow.Net.test.UI.Controls.DataControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" >
+    <Grid Margin="5" Background="{StaticResource Brush05}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="KEY" Grid.Row="0" Grid.Column="0" Foreground="{StaticResource Brush03}" Margin="5,5,5,0" VerticalAlignment="Top"/>
+        <TextBox Grid.Row="0" Grid.Column="1" x:Name="TxtKey" Margin="5,5,5,0" />
+        <TextBlock Text="VALUE" Grid.Row="1" Grid.Column="0" Foreground="{StaticResource Brush03}" Margin="5,5,5,0" VerticalAlignment="Top" />
+        <TextBox Grid.Row="1" Grid.Column="1" x:Name="TxtValue" TextWrapping="Wrap" Margin="5,5,5,0" />
+        <TextBlock Text="DataType" x:Name="TxtDataType" Grid.Row="2" Grid.Column="0" Foreground="{StaticResource Brush03}" Margin="5,5,5,0" VerticalAlignment="Top" />
+        <ComboBox x:Name="CbDataType" SelectionChanged="CbDataType_OnSelectionChanged" Grid.Row="2" Grid.Column="1" Margin="5,5,5,5"></ComboBox>
+    </Grid>
+</UserControl>

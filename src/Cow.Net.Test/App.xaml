@@ -3,6 +3,19 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <!--<Style x:Key="DefaultStyle" TargetType="{x:Type Control}">
+            <Setter Property="FontFamily" Value="Segoe360" />
+        </Style>
+        <Brush x:Key="WindowBackground">#202020</Brush>
+        <Brush x:Key="BoxBackground">#3b3b3b</Brush>
+        <Brush x:Key="TextColor">#cfcfcf</Brush>
+        <Brush x:Key="Seperator">#cfcfcf</Brush>-->
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Themes/MetroDark/MetroDark.MSControls.Core.Implicit.xaml" />
+                <ResourceDictionary Source="Themes/MetroDark/MetroDark.MSControls.Toolkit.Implicit.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

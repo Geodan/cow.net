@@ -6,13 +6,15 @@ using Newtonsoft.Json.Converters;
 
 namespace Cow.Net.Core
 {
-    public class CoreSettings
+    internal class CoreSettings
     {
         private static CoreSettings _instance;
-        public SynchronizationContext SynchronizationContext;
-        public ConnectionInfo ConnectionInfo;
-        public string Version = "2.0.5";
+
+        public readonly string Version = "2.0.5";
         public readonly string SupportedServerVerion = "0.1";
+        public bool LocalStorageAvailable;
+        public SynchronizationContext SynchronizationContext;
+        public ConnectionInfo ConnectionInfo;               
         public StoreRecord CurrentUser { get; set; }
         public readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = true } } };        
 

@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Cow.Net.test.UI.Controls.StoreView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Foreground="{StaticResource Brush03}" >
+    <UserControl.Resources>
+        
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Row="0" MouseLeftButtonDown="ChangeCollapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Rectangle x:Name="BgRect" Grid.Row="0" Grid.Column="0" Grid.RowSpan="3" Grid.ColumnSpan="3" Fill="{StaticResource Brush04}" Stroke="{StaticResource Brush04}" StrokeThickness="1" />
+            <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3">                               
+                <TextBlock Style="{StaticResource TextBlockStyle}" x:Name="TxtStoreName" VerticalAlignment="Center" Text="TEST"  FontSize="20"  Foreground="{StaticResource Brush01}" FontWeight="Bold" Margin="5,0,0,0" />
+                <TextBlock x:Name="TxtItems" Text="" Margin="8,4,0,0" Foreground="{StaticResource Brush01}" />
+            </StackPanel>
+            <Grid Grid.Row="0" Grid.Column="2" Margin="5,0,5,0" >
+                <Image x:Name="ImgCollapsibleDown" Source="/Cow.Net.Test;component/Resources/Images/collapsible_down.png" HorizontalAlignment="Right" Width="16" VerticalAlignment="Center" />
+                <Image x:Name="ImgCollapsibleUp" Source="/Cow.Net.Test;component/Resources/Images/collapsible_up.png" HorizontalAlignment="Right" Width="16" VerticalAlignment="Center" />
+            </Grid>           
+            <Rectangle Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Height="1" VerticalAlignment="Bottom" Margin="5,4,5,4" Fill="{StaticResource Brush03}" Opacity="0.3" />
+            <CheckBox Grid.Row="2" Grid.Column="0" x:Name="CbSynced" Content="synced" IsEnabled="False" Margin="0,0,0,-8" FontSize="10" VerticalAlignment="Bottom" />
+            <CheckBox Grid.Row="2" Grid.Column="1" VerticalAlignment="Bottom" x:Name="CbShowDeleted" Content="show deleted" IsChecked="False" Margin="8,0,0,-8" FontSize="10" Checked="CbShowDeleted_OnChecked" Unchecked="CbShowDeleted_OnUnchecked" />
+            <Button Grid.Row="2" Grid.Column="2" Width="20"  HorizontalAlignment="Right" Margin="0,2,2,0" Padding="0" Click="ButtonBase_OnClick_" >
+                <Image Margin="3" Source="/Cow.Net.Test;component/Resources/Images/add_button.png" Width="14" />
+            </Button>
+        </Grid>
+        <Grid Grid.Row="1" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Rectangle Grid.Row="0" Grid.Column="0" Fill="{StaticResource Brush05}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                       StrokeThickness="1" Stroke="{StaticResource Brush04}"/>
+            <StackPanel Grid.Row="0" Margin="5" Name="RecordsList" >
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

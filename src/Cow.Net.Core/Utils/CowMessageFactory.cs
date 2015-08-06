@@ -17,12 +17,14 @@ namespace Cow.Net.Core.Utils
         /// <returns></returns>
         internal static CowMessage<Dictionary<string, object>> CreateSyncMessage(ConnectionInfo connectionInfo, SyncType syncType, IEnumerable<StoreRecord> storeObjects, string projectId = null)
         {
-            var sendList = storeObjects.Select(storeObject => new Dictionary<string, object>
+            var objectToSync = string.IsNullOrEmpty(projectId) ? storeObjects : storeObjects.Where(so => so.Identifier.Equals(projectId));
+
+            var sendList = objectToSync.Select(storeObject => new Dictionary<string, object>
             {
                 {"_id", storeObject.Id}, 
                 {"updated", storeObject.Updated}, 
                 {"deleted", storeObject.Deleted},                
-            }).ToList();
+            }).ToList();            
 
             var payload = new Dictionary<string, object>
             {
@@ -64,22 +66,21 @@ namespace Cow.Net.Core.Utils
             };
         }
 
-        internal static CowMessage<Dictionary<string, object>> CreateSyncInfoMessage(SyncType syncType, List<StoreRecord> pushRecords, List<StoreRecord> requestRecords, string project, string sender, string target)
+        internal static CowMessage<Dictionary<string, object>> CreateSyncInfoMessage(SyncType syncType, List<StoreRecord> pushRecords, List<StoreRecord> requestRecords, string projectId, string sender, string target)
         {
-            var info = new Dictionary<string, object> 
-            {
-                {"IWillSent", pushRecords.Select(storeRecord => storeRecord.Id).ToList()}, 
-                {"IShallReceive", requestRecords.Select(storeRecord => storeRecord.Id).ToList()}
-            };
-
             var payload = new Dictionary<string, object>
             {
                 {"syncType", Enum.GetName(typeof(SyncType), syncType)},                
-                {"syncinfo", info},
+                {"syncinfo", new SyncInfo
+                    {
+                        WillSent = pushRecords.Select(storeRecord => storeRecord.Id).ToList(),
+                        ShallReceive = requestRecords.Select(storeRecord => storeRecord.Id).ToList()
+                    }
+                }
             };
 
-            if(!string.IsNullOrEmpty(project))
-                payload.Add("project", project);
+            if(!string.IsNullOrEmpty(projectId))
+                payload.Add("project", projectId);
 
             return new CowMessage<Dictionary<string, object>>
             {
@@ -90,7 +91,7 @@ namespace Cow.Net.Core.Utils
             };
         }
 
-        internal static CowMessage<Dictionary<string, object>> CreateWantedMessage(SyncType syncType, List<StoreRecord> records, string project, string sender, string target)
+        internal static CowMessage<Dictionary<string, object>> CreateWantedMessage(SyncType syncType, List<StoreRecord> records, string projectId, string sender, string target)
         {
             var payload = new Dictionary<string, object>
             {
@@ -100,8 +101,8 @@ namespace Cow.Net.Core.Utils
             if(records.Any())
                 payload.Add("list", records.Select(storeRecord => storeRecord.Id).ToList());
 
-            if (!string.IsNullOrEmpty(project))
-                payload.Add("project", project);
+            if (!string.IsNullOrEmpty(projectId))
+                payload.Add("project", projectId);
 
             return new CowMessage<Dictionary<string, object>>
             {
@@ -112,41 +113,41 @@ namespace Cow.Net.Core.Utils
             };
         }
 
-        internal static CowMessage<Dictionary<string, object>> CreateRequestedMessage(SyncType syncType, List<StoreRecord> records, string project, string sender)
+        internal static CowMessage<Dictionary<string, object>> CreateRequestedMessage(SyncType syncType, StoreRecord record, string projectId, string sender)
         {
             var payload = new Dictionary<string, object>
             {
                 {"syncType", Enum.GetName(typeof(SyncType), syncType)},                
-                {"list", records}
+                {"record", record}
             };                            
 
-            if (!string.IsNullOrEmpty(project))
-                payload.Add("project", project);
+            if (!string.IsNullOrEmpty(projectId))
+                payload.Add("project", projectId);
 
             return new CowMessage<Dictionary<string, object>>
             {
                 Sender = sender,                
-                Action = Action.requestedRecords,
+                Action = Action.requestedRecord,
                 Payload = payload
             };
         }
 
-        internal static CowMessage<Dictionary<string, object>> CreateMissingRecordsMessage(SyncType syncType, List<StoreRecord> records, string project, string sender, string target = null)
+        internal static CowMessage<Dictionary<string, object>> CreateMissingRecordMessage(SyncType syncType, StoreRecord record, string projectId, string sender, string target = null)
         {
             var payload = new Dictionary<string, object>
             {
                 {"syncType", Enum.GetName(typeof(SyncType), syncType)},
-                {"list", records},
+                {"record", record},
             };
 
-            if (!string.IsNullOrEmpty(project))            
-                payload.Add("project", project);            
+            if (!string.IsNullOrEmpty(projectId))            
+                payload.Add("project", projectId);            
 
             return new CowMessage<Dictionary<string, object>>
             {
                 Sender = sender,
                 Target = target,
-                Action = Action.missingRecords,                                
+                Action = Action.missingRecord,                                
                 Payload = payload
             };
         }

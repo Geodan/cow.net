@@ -68,7 +68,16 @@ namespace Cow.Net.Core.Models
                 _serverVersion = value;
                 OnPropertyChanged();
             }
-        }       
+        }
+
+        internal void Reset()
+        {
+            PeerId = null;
+            ServerIp = null;
+            ServerKey = null;
+            ServerVersion = null;
+            ServerTime = 0;
+        }
 
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)

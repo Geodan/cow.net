@@ -8,9 +8,9 @@
         newList,        
         syncinfo,
         wantedList,
-        missingRecords,
+        missingRecord,
         updatedRecord,
-        requestedRecords,
+        requestedRecord,
         Unknown
     }
 }

@@ -3,37 +3,46 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" >
-    <Grid HorizontalAlignment="Left">
+             mc:Ignorable="d" HorizontalAlignment="Stretch" Foreground="{StaticResource Brush03}">
+    <Grid >
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="CONNECTION INFO" FontSize="18" FontWeight="Bold" Margin="5,0,5,0" />
-        <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Height="1" HorizontalAlignment="Stretch" Fill="Black" Margin="5,0,5,0" />
+        <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource TextBlockStyle}" Foreground="{StaticResource Brush01}" Text="CONNECTION INFO" FontSize="18" FontWeight="Bold" Margin="5,0,5,0" />
+        <Grid Grid.Row="1" Grid.Column="0" Margin="3,5,3,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Rectangle Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="5" Fill="{StaticResource Brush05}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" 
+                       StrokeThickness="1" Stroke="{StaticResource Brush04}"/>
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="PEER ID" Foreground="{StaticResource Brush02}" FontWeight="Bold" Margin="5,5,0,0" />
+            <TextBlock Grid.Row="0" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=PeerId}"  Foreground="{StaticResource Brush03}" Margin="10,5,0,0" />
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Peer ID" Foreground="Black" FontWeight="Bold" Margin="3" />
-        <TextBlock Grid.Row="1" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=PeerId}"  Foreground="Black" Margin="3" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="SERVER" Foreground="{StaticResource Brush02}" FontWeight="Bold"  Margin="5,0,0,0"/>
+            <TextBlock Grid.Row="1" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerIp}"  Foreground="{StaticResource Brush03}" Margin="10,0,0,0"/>
 
-        <TextBlock Grid.Row="2" Grid.Column="0" Text="Server" Foreground="Black" FontWeight="Bold"  Margin="3"/>
-        <TextBlock Grid.Row="2" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerIp}"  Foreground="Black" Margin="3"/>
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="TIME" Foreground="{StaticResource Brush02}" FontWeight="Bold" Margin="5,0,0,0"/>
+            <TextBlock Grid.Row="2" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerTime}"  Foreground="{StaticResource Brush03}" Margin="10,0,0,0" />
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Time" Foreground="Black" FontWeight="Bold" Margin="3"/>
-        <TextBlock Grid.Row="3" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerTime}"  Foreground="Black" Margin="3" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="KEY" Foreground="{StaticResource Brush02}" FontWeight="Bold" Margin="5,0,0,0" />
+            <TextBlock Grid.Row="3" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerKey}"  Foreground="{StaticResource Brush03}" Margin="10,0,0,0" />
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Key" Foreground="Black" FontWeight="Bold" Margin="3" />
-        <TextBlock Grid.Row="4" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerKey}"  Foreground="Black" Margin="3" />
-
-        <TextBlock Grid.Row="5" Grid.Column="0" Text="Version" Foreground="Black" FontWeight="Bold" Margin="3" />
-        <TextBlock Grid.Row="5" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerVersion}"  Foreground="Black" Margin="3" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="VERSION" Foreground="{StaticResource Brush02}" FontWeight="Bold" Margin="5,0,0,5" />
+            <TextBlock Grid.Row="4" Grid.Column="1" DataContext="{Binding Path=ConnectionInfo}" Text="{Binding Path=ServerVersion}"  Foreground="{StaticResource Brush03}" Margin="10,0,0,0" />
+        </Grid>
     </Grid>
 </UserControl>

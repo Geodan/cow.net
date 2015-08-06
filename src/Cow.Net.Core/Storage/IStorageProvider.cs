@@ -6,8 +6,11 @@ namespace Cow.Net.Core.Storage
     public interface IStorageProvider
     {
         bool PrepareDatabase(List<string> stores);
-        List<StoreRecord> GetStoreObjects();        
-        void AddStoreObject(List<StoreRecord> peers);
-        void UpdateStoreObject(List<StoreRecord> peers);
+        bool HasRecord(string storeId, string recordId);
+        bool HasNonOutdatedLinkedStoreRecords(string storeId, string identifier, long outdatedTime);
+        List<StoreRecord> GetStoreRecords(string storeId);        
+        void AddStoreObjects(string storeId, List<StoreRecord> records);
+        void UpdateStoreObjects(string storeId, List<StoreRecord> records);
+        void RemoveObjects(string storeId, List<StoreRecord> records);
     }
 }

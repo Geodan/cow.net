@@ -57,27 +57,30 @@
     <Compile Include="Exceptions\IncorrectCowServerVersion.cs" />
     <Compile Include="Exceptions\IncorrectServerKeyException.cs" />
     <Compile Include="Exceptions\TimeDifferenceException.cs" />
-    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="MessageHandlers\CommandHandler.cs" />
     <Compile Include="MessageHandlers\NewListHandler.cs" />
     <Compile Include="MessageHandlers\PeerGonehandler.cs" />
-    <Compile Include="MessageHandlers\UpdatedRecordsHandler.cs" />
+    <Compile Include="MessageHandlers\SyncInfoHandler.cs" />
+    <Compile Include="MessageHandlers\UpdatedRecordHandler.cs" />
     <Compile Include="MessageHandlers\WantedRecordsHandler.cs" />
-    <Compile Include="Models\Command.cs" />
+    <Compile Include="Models\CommandPayload.cs" />
     <Compile Include="Models\Delta.cs" />
     <Compile Include="Models\PeerGone.cs" />
     <Compile Include="CoreSettings.cs" />
-    <Compile Include="Models\UpdatedRecord.cs" />
+    <Compile Include="Models\RecordPayload.cs" />
+    <Compile Include="Models\SyncInfo.cs" />
+    <Compile Include="Models\SyncInfoPayload.cs" />
+    <Compile Include="Models\SyncObject.cs" />
     <Compile Include="Models\WantedList.cs" />
     <Compile Include="Properties\Annotations1.cs" />
     <Compile Include="Config\Default\DataTypes\ProjectData.cs" />
     <Compile Include="Utils\CowEventHandlers.cs" />
     <Compile Include="MessageHandlers\ConnectedHandler.cs" />
-    <Compile Include="MessageHandlers\MissingRecordsHandler.cs" />
+    <Compile Include="MessageHandlers\MissingRecordHandler.cs" />
     <Compile Include="Models\Action.cs" />
     <Compile Include="Models\ConnectionInfo.cs" />
     <Compile Include="Models\CowMessage.cs" />
-    <Compile Include="Models\NewList.cs" />
+    <Compile Include="Models\NewListPayload.cs" />
     <Compile Include="Models\StoreRecord.cs" />
     <Compile Include="Models\SyncType.cs" />
     <Compile Include="CowStore.cs" />
@@ -87,6 +90,8 @@
     <Compile Include="Utils\CowMessageFactory.cs" />
     <Compile Include="Utils\DataConverter.cs" />
     <Compile Include="Utils\DefaultRecords.cs" />
+    <Compile Include="Utils\PerformanceMonitor.cs" />
+    <Compile Include="Utils\Timer.cs" />
     <Compile Include="Utils\TimeUtils.cs" />
   </ItemGroup>
   <ItemGroup>

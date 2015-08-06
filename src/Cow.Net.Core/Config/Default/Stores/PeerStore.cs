@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using Cow.Net.Core.Models;
+using Cow.Net.Core.Storage;
 
 namespace Cow.Net.Core.Config.Default.Stores
 {
     public class PeerStore : CowStore
     {
-        public PeerStore(string id, SyncType syncType, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true, bool createDeltas = true) : 
-            base(id, syncType, subStores, saveToLocalDatabase, createDeltas)
+        public PeerStore(string id, SyncType syncType, IStorageProvider storageProvider, IEnumerable<CowStore> subStores = null, bool saveToLocalDatabase = true, bool supportsDeltas = true) : 
+            base(id, syncType, storageProvider, subStores, saveToLocalDatabase, supportsDeltas)
         {
 
         }

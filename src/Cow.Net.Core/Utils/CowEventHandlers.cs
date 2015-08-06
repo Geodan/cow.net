@@ -14,7 +14,7 @@ namespace Cow.Net.Core.Utils
 
         //Store
         public delegate void DatabaseErrorHandler(object sender, string error);
-        public delegate void StoreSyncedHandler(object sender);
+        public delegate void StoreSyncedHandler(object sender, string project);
         public delegate void StoreSyncRequestedHandler(object sender, string identifier = null);
         public delegate void StoreUpdateRecordRequestedHandler(object sender, StoreRecord record);
         public delegate void StoreMissingRecordsRequestedHandler(object sender, string project, List<StoreRecord> records);
@@ -24,11 +24,12 @@ namespace Cow.Net.Core.Utils
         public delegate void RecordSyncToPeersRequested(object sender, StoreRecord records);        
 
         //Other
-        public delegate void CommandReceivedHandler(object sender, CowMessage<Command> commandMessage);
+        public delegate void CommandReceivedHandler(object sender, CowMessage<CommandPayload> commandMessage);
+        public delegate void CowSocketMessageReceivedHandler(object sender, WebSocketSharp.MessageEventArgs message);        
         public delegate void CowErrorHandler(object sender, Exception e);
 
         //Collection
         public delegate void RecordCollectionChanged(
-            object sender, List<StoreRecord> newRecords, string key);
+            object sender, List<StoreRecord> newRecords, List<StoreRecord> deletedRecords);
     }
 }
