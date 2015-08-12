@@ -8,7 +8,7 @@ namespace Cow.Net.Core.MessageHandlers
     {
         internal static void Handle(string message, CowStoreManager storeManager)
         {
-            var peerGone = JsonConvert.DeserializeObject<CowMessage<PeerGone>>(message);
+            var peerGone = JsonConvert.DeserializeObject<CowMessage<PeerGone>>(message, CoreSettings.Instance.SerializerSettings);
             var peerStore = storeManager.GetPeerStore();
 
             foreach (var storeObject in peerStore.Records.Where(storeObject => storeObject.Id.Equals(peerGone.Payload.GonePeerId)))

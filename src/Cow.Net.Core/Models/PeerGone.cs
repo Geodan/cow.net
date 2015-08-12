@@ -2,7 +2,7 @@
 
 namespace Cow.Net.Core.Models
 {
-    public class PeerGone
+    public class PeerGone : IPayload
     {
         [JsonProperty("gonePeerID")] 
         public string GonePeerId;

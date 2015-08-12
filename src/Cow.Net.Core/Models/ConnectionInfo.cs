@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
 {
-    public class ConnectionInfo : INotifyPropertyChanged
+    public class ConnectionInfo : INotifyPropertyChanged, IPayload
     {
         public event PropertyChangedEventHandler PropertyChanged;
 

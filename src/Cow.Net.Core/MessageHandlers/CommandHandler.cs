@@ -7,7 +7,7 @@ namespace Cow.Net.Core.MessageHandlers
     {
         internal static CowMessage<CommandPayload> Handle(string message)
         {
-            var commandMessage = JsonConvert.DeserializeObject<CowMessage<CommandPayload>>(message);
+            var commandMessage = JsonConvert.DeserializeObject<CowMessage<CommandPayload>>(message, CoreSettings.Instance.SerializerSettings);
             return commandMessage;
         }
     }

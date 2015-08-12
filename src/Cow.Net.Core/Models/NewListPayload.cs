@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
 {
-    public class NewListPayload
+    public class NewListPayload : IPayload
     {
         [JsonProperty("syncType")]
         public SyncType SyncType { get; set; }

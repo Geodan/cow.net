@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
 {
-    public class SyncInfoPayload
+    public class SyncInfoPayload : IPayload
     {
         [JsonProperty("syncType")]
         public SyncType SyncType { get; set; }

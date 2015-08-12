@@ -143,7 +143,7 @@ namespace Cow.Net.Core
             if (Connected)
             {
                 var jsonString = JsonSerialize(CowMessageFactory.CreateUpdateMessage(ConnectionInfo, ((CowStore) sender).SyncType, record));
-                _socketClient.Send(jsonString);
+                Send(jsonString);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Cow.Net.Core
             if (Connected)
             {
                 var jsonString = JsonSerialize(CowMessageFactory.CreateSyncMessage(ConnectionInfo, ((CowStore) sender).SyncType,((CowStore) sender).Records, identifier));
-                _socketClient.Send(jsonString);
+                Send(jsonString);
             }
         }
 
@@ -164,7 +164,7 @@ namespace Cow.Net.Core
                 foreach (var storeRecord in records)
                 {
                     var jsonString = JsonSerialize(CowMessageFactory.CreateMissingRecordMessage(((CowStore) sender).SyncType, storeRecord, project, ConnectionInfo.PeerId));
-                    _socketClient.Send(jsonString);
+                    Send(jsonString);
                 }
             }
         }
@@ -179,11 +179,11 @@ namespace Cow.Net.Core
             foreach (var storeRecord in records)
             {
                 var jsonString = JsonSerialize(CowMessageFactory.CreateRequestedMessage(((CowStore)sender).SyncType, storeRecord, project, ConnectionInfo.PeerId));
-                _socketClient.Send(jsonString);   
+                Send(jsonString);
             }            
         }
 
-        private string JsonSerialize(CowMessage<Dictionary<string, object>> message)
+        private string JsonSerialize(CowMessage<DictionaryPayload> message)
         {
             return JsonConvert.SerializeObject(message, Formatting.None, CoreSettings.Instance.SerializerSettings);
         }
@@ -292,6 +292,12 @@ namespace Cow.Net.Core
             }
         }
 
+        private void Send(string json)
+        {
+          //  var lzw = LZWEncoder.Encode(json);
+            _socketClient.Send(json);   
+        }
+
         private void HandleNewConnection(string message)
         {
             ConnectionInfo = ConnectedHandler.Handle(message);
@@ -367,7 +373,7 @@ namespace Cow.Net.Core
 
         //Bubble socket events up
         private void SocketClientOnMessage(object sender, MessageEventArgs e)
-        {
+        {            
             if(!Connected)
                 Connected = true;
 

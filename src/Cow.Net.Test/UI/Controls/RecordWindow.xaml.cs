@@ -52,6 +52,9 @@ namespace Cow.Net.test.UI.Controls
 
         private void SetDeltas()
         {
+            if(_record == null)
+                return;
+
             if(_record.Deltas == null || !_record.Deltas.Any())
                 return;
 

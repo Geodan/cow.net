@@ -2,7 +2,7 @@
 
 namespace Cow.Net.Core.Models
 {
-    public class CommandPayload
+    public class CommandPayload : IPayload
     {
         [JsonProperty("command")]
         public string Commando { get; set; }

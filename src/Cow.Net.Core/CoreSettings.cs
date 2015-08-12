@@ -16,7 +16,7 @@ namespace Cow.Net.Core
         public SynchronizationContext SynchronizationContext;
         public ConnectionInfo ConnectionInfo;               
         public StoreRecord CurrentUser { get; set; }
-        public readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, Converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = true } } };        
+        public readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, TypeNameHandling = TypeNameHandling.Objects, Converters = new List<JsonConverter> { new StringEnumConverter { CamelCaseText = true }, new LZWConverter() } };        
 
         private CoreSettings() { }
 

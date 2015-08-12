@@ -11,7 +11,7 @@ namespace Cow.Net.Core.MessageHandlers
     {
         internal static void Handle(string peerId, string message, CowStoreManager storeManager, WebSocket socket)
         {
-            var newList = JsonConvert.DeserializeObject<CowMessage<NewListPayload>>(message);
+            var newList = JsonConvert.DeserializeObject<CowMessage<NewListPayload>>(message, CoreSettings.Instance.SerializerSettings);
             var store = storeManager.GetStoreById(newList.Payload.SyncType.ToString());
             if (store == null)
                 return;

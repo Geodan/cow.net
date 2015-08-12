@@ -1,28 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using Cow.Net.Core.Extensions;
+using Cow.Net.Core.Models;
 using Newtonsoft.Json;
 
-namespace Cow.Net.Core.Models
+namespace Cow.Net.Core.Utils
 {
-    public class CowMessage<T> where T : IPayload 
-    {
-        [JsonProperty("action")]
-        public Action Action { get; set; }
-
-        [JsonProperty("sender")]
-        public string Sender { get; set; }
-
-        [JsonProperty("target")]
-        public string Target { get; set; }
-
-        [JsonProperty("payload")]      
-        public T Payload { get; set; } 
-    }
-
     public class LZWConverter : JsonConverter
     {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
@@ -40,8 +24,6 @@ namespace Cow.Net.Core.Models
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            //var t = (IsNullableType(objectType)) ? Nullable.GetUnderlyingType(objectType) : objectType;
-
             if (reader.TokenType == JsonToken.Null)
             {
                 if (!IsNullable(objectType))
@@ -50,7 +32,7 @@ namespace Cow.Net.Core.Models
                 return null;
             }
 
-            string data = null;
+            string data;
 
             if (reader.TokenType == JsonToken.String)
             {
@@ -73,11 +55,6 @@ namespace Cow.Net.Core.Models
 
         public override bool CanConvert(Type objectType)
         {
-            if (objectType == typeof (ConnectionInfo))
-            {
-                return false;
-            }
-
             return objectType.GetTypeInfo().ImplementedInterfaces.Contains(typeof(IPayload));
         }
 
@@ -93,7 +70,7 @@ namespace Cow.Net.Core.Models
 
         public static bool IsNullable(Type type)
         {
-	        return type != null && (!type.GetTypeInfo().IsValueType || IsNullableType(type));
+            return type != null && (!type.GetTypeInfo().IsValueType || IsNullableType(type));
         }
 
         private static bool IsNullableType(Type type)
@@ -103,7 +80,7 @@ namespace Cow.Net.Core.Models
                 return false;
             }
 
-			return (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
+            return (type.GetTypeInfo().IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
     }
 }

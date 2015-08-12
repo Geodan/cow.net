@@ -57,6 +57,7 @@
     <Compile Include="Exceptions\IncorrectCowServerVersion.cs" />
     <Compile Include="Exceptions\IncorrectServerKeyException.cs" />
     <Compile Include="Exceptions\TimeDifferenceException.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="MessageHandlers\CommandHandler.cs" />
     <Compile Include="MessageHandlers\NewListHandler.cs" />
     <Compile Include="MessageHandlers\PeerGonehandler.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="MessageHandlers\WantedRecordsHandler.cs" />
     <Compile Include="Models\CommandPayload.cs" />
     <Compile Include="Models\Delta.cs" />
+    <Compile Include="Models\DictionaryPayload.cs" />
+    <Compile Include="Models\IPayload.cs" />
     <Compile Include="Models\PeerGone.cs" />
     <Compile Include="CoreSettings.cs" />
     <Compile Include="Models\RecordPayload.cs" />
