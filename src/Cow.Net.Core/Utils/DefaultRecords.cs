@@ -5,7 +5,7 @@ namespace Cow.Net.Core.Utils
 {
     internal class DefaultRecords
     {
-        internal static StoreRecord CreatePeerRecord(ConnectionInfo connectionInfo, bool isAlphaPeer)
+        internal static StoreRecord CreatePeerRecord(ConnectionInfo connectionInfo, bool isAlphaPeer, StoreRecord user, StoreRecord activeProject)
         {
             var record = new StoreRecord
             {
@@ -18,9 +18,14 @@ namespace Cow.Net.Core.Utils
                 Dirty = false,
             };
 
+            if(user != null)
+                record.Data.Add("userid", user.Id);
+
+            if(activeProject != null)
+                record.Data.Add("activeproject", null);
+
             if (isAlphaPeer)
-            {
-                record.Data.Add("userid", null);
+            {                
                 record.Data.Add("family", "alpha");
                 record.Data.Add("version", CoreSettings.Instance.Version);
             }

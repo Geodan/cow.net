@@ -158,7 +158,7 @@ namespace Cow.Net.Core.Models
         [JsonProperty("deltas")]
         public ObservableCollection<Delta> Deltas
         {
-            get { return _deltas; }
+            get { return _deltas ?? (_deltas = new ObservableCollection<Delta>()); }
             internal set
             {
                 _deltas = value;

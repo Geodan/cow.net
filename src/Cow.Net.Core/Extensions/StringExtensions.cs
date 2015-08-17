@@ -43,7 +43,6 @@ namespace Cow.Net.Core.Extensions
                 compressed.Add((int)charValue);
             }
 
-            // build the dictionary
             var dictionary = new Dictionary<int, string>();
             for (var i = 0; i < 256; i++)
                 dictionary.Add(i, ((char)i).ToString());

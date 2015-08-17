@@ -37,6 +37,8 @@ namespace Cow.Net.Core
         private bool _connected;
         private WebSocket _socketClient;
         private bool _initialized;
+        private StoreRecord _peer;
+        private StoreRecord _activeProject;
 
         public ConnectionInfo ConnectionInfo
         {
@@ -66,12 +68,39 @@ namespace Cow.Net.Core
         }
 
         /// <summary>
-        /// Set or get the current user
+        /// Set or get the current user, will update userid in peer
         /// </summary>
         public StoreRecord User
         {
             get { return CoreSettings.Instance.CurrentUser; }
-            set { CoreSettings.Instance.CurrentUser = value; }             
+            set
+            {
+                CoreSettings.Instance.CurrentUser = value;
+
+                if (_peer == null)
+                    return;
+
+                _peer.UpdateData("userid", value.Id);
+                _peer.Sync();
+            }             
+        }
+
+        /// <summary>
+        /// Set or get the current active project, will update activeproject id in peer
+        /// </summary>
+        public StoreRecord ActiveProject
+        {
+            get { return _activeProject; }
+            set
+            {
+                _activeProject = value;
+
+                if (_peer == null)
+                    return;
+
+                _peer.UpdateData("activeproject", value.Id);
+                _peer.Sync();
+            }
         }
 
         /// <summary>
@@ -229,14 +258,14 @@ namespace Cow.Net.Core
         private void HandleReceivedMessage(string message)
         {
             dynamic d = JObject.Parse(message);
-
+            
             //Ignore broadcast to self
-            if(d.sender != null && d.sender.ToString().Equals(ConnectionInfo.PeerId) && (d.target == null || string.IsNullOrEmpty(d.target.ToString())))
+            if (d["sender"] != null && d["sender"].ToString().Equals(ConnectionInfo.PeerId) && (d["target"] == null || string.IsNullOrEmpty(d["target"].ToString())))
                 return;
 
             // ReSharper disable once RedundantAssignment
             var action = Action.Unknown;
-            if (d.action == null || !Enum.TryParse((string) d.action, out action))
+            if (d["action"] == null || !Enum.TryParse((string)d["action"], out action))
             {
                 Debug.WriteLine("Unknown action received");
                 return;
@@ -294,7 +323,6 @@ namespace Cow.Net.Core
 
         private void Send(string json)
         {
-          //  var lzw = LZWEncoder.Encode(json);
             _socketClient.Send(json);   
         }
 
@@ -305,7 +333,8 @@ namespace Cow.Net.Core
                 return;
 
             OnCowConnectionInfoReceived(ConnectionInfo);
-            Config.CowStoreManager.GetPeerStore().Add(DefaultRecords.CreatePeerRecord(ConnectionInfo, Config.IsAlphaPeer));
+            _peer = DefaultRecords.CreatePeerRecord(ConnectionInfo, Config.IsAlphaPeer, User, ActiveProject);
+            Config.CowStoreManager.GetPeerStore().Add(_peer);
 
             SyncStoreWithPeers();                      
         }
@@ -382,7 +411,7 @@ namespace Cow.Net.Core
         }
 
         private void OnCowSocketMessageReceived(MessageEventArgs message)
-        {
+        {            
             var handler = CowSocketMessageReceived;
             if (handler == null)
                 return;

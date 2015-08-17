@@ -24,6 +24,9 @@ namespace Cow.Net.Core.Utils
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            if (reader.Value == null)
+                return null;
+
             if (reader.TokenType == JsonToken.Null)
             {
                 if (!IsNullable(objectType))

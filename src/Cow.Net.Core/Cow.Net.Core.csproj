@@ -93,6 +93,7 @@
     <Compile Include="Utils\CowMessageFactory.cs" />
     <Compile Include="Utils\DataConverter.cs" />
     <Compile Include="Utils\DefaultRecords.cs" />
+    <Compile Include="Utils\LZWConverter.cs" />
     <Compile Include="Utils\PerformanceMonitor.cs" />
     <Compile Include="Utils\Timer.cs" />
     <Compile Include="Utils\TimeUtils.cs" />
