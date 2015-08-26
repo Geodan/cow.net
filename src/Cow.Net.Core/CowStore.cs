@@ -129,7 +129,7 @@ namespace Cow.Net.Core
             }            
         }
 
-        internal void HandleSyncInfo(CowMessage<SyncInfoPayload> syncInfo)
+        internal async void HandleSyncInfo(CowMessage<SyncInfoPayload> syncInfo)
         {
             foreach (var s in syncInfo.Payload.SyncInfo.WillSent)
             {
@@ -154,82 +154,6 @@ namespace Cow.Net.Core
             }
         }
 
-        /// <summary>
-        /// Missing records after syncing with peers
-        /// </summary>
-        internal void HandleMissingRecord(ConnectionInfo connectionInfo, CowMessage<RecordPayload> missingRecord)
-        {
-           // await Task.Delay(TimeSpan.FromMilliseconds(100));
-
-            if (missingRecord.Payload.Record != null)
-            {
-                if (!string.IsNullOrEmpty(missingRecord.Payload.Project))
-                {
-                    missingRecord.Payload.Record.Identifier = missingRecord.Payload.Project;
-                }
-
-                //Add subrecord lists to a record if this store contains any substores
-                if (SubStores != null)
-                {
-                    foreach (var subStore in SubStores)
-                    {
-                        missingRecord.Payload.Record.AddSubRecordList(subStore, missingRecord.Payload.Record.Id);
-                    }
-                }
-
-                Add(missingRecord.Payload.Record, missingRecord.Payload.Project);
-
-                if (CoreSettings.Instance.LocalStorageAvailable && SaveToLocalDatabase && _storageProvider != null)
-                {
-                    _storageProvider.AddStoreObjects(Id, new List<StoreRecord> {missingRecord.Payload.Record});
-                }
-
-                if (_toReceiveRecords != null && _toReceiveRecords.Any())
-                {
-                    foreach (var receiveRecord in _toReceiveRecords)
-                    {
-                        if (!receiveRecord.RecordId.Equals(missingRecord.Payload.Record.Id))
-                            continue;
-
-                        _toReceiveRecords.Remove(receiveRecord);
-
-                        //Check if removed is last to receive record from project id and start subsync or set synced for project
-                        if (!string.IsNullOrEmpty(receiveRecord.Project))
-                        {
-                            var projectRecordsToReceive = _toReceiveRecords.Count(r => r.Project.Equals(receiveRecord.Project)) - 1;                            
-
-                            if (projectRecordsToReceive == 0)
-                            {
-                                if (SubStores != null)
-                                {
-                                    StartSubSync();
-                                }
-                                else
-                                {
-                                    OnStoreSynced(receiveRecord.Project);
-                                }                                
-                            }
-                        }
-
-                        break;
-                    }
-                }
-            }
-
-            //All records received start subsync or set store to synced
-            if (!Synced && (_toReceiveRecords == null || !_toReceiveRecords.Any()))
-            {
-                if (SubStores != null)
-                {
-                    StartSubSync();
-                }
-                else
-                {
-                    OnStoreSynced();
-                } 
-            }
-        }
-
         internal void StartSubSync()
         {
             _subSyncsNeeded = Records.Count * SubStores.Count;
@@ -249,29 +173,95 @@ namespace Cow.Net.Core
         /// <summary>
         /// A new record or a record gets updated by a peer, update in memory and local storage
         /// </summary>
-        internal void HandleUpdatedRecord(CowMessage<RecordPayload> updatedRecord)
+        internal async void HandleRecord(CowMessage<RecordPayload> handleRecord)
         {
-            if (!string.IsNullOrEmpty(updatedRecord.Payload.Project))
+            if (handleRecord.Payload.Record == null)
+                return;
+            
+            if (!string.IsNullOrEmpty(handleRecord.Payload.Project))
             {
-                updatedRecord.Payload.Record.Identifier = updatedRecord.Payload.Project;
+                handleRecord.Payload.Record.Identifier = handleRecord.Payload.Project;
             }
 
-            var recordFromMemory = Records.FirstOrDefault(r => r.Id.Equals(updatedRecord.Payload.Record.Id));
+            var recordFromMemory = Records.FirstOrDefault(r => r.Id.Equals(handleRecord.Payload.Record.Id));
             if (recordFromMemory != null)
             {
-                recordFromMemory.Update(updatedRecord.Payload.Record);
-                if (CoreSettings.Instance.LocalStorageAvailable && SaveToLocalDatabase && _storageProvider != null)
-                {
-                    _storageProvider.UpdateStoreObjects(Id, new List<StoreRecord> {updatedRecord.Payload.Record});
-                }
+                await UpdateRecord(recordFromMemory, handleRecord);
             }
             else
             {
-                Add(updatedRecord.Payload.Record, updatedRecord.Payload.Project);
-                if (CoreSettings.Instance.LocalStorageAvailable && SaveToLocalDatabase && _storageProvider != null)
+                await AddRecord(handleRecord);
+            }
+        }
+
+        internal async Task UpdateRecord(StoreRecord recordFromMemory, CowMessage<RecordPayload> updatedRecord)
+        {
+            recordFromMemory.Update(updatedRecord.Payload.Record);
+            if (CoreSettings.Instance.LocalStorageAvailable && SaveToLocalDatabase && _storageProvider != null)
+            {
+                _storageProvider.UpdateStoreObjects(Id, new List<StoreRecord> {updatedRecord.Payload.Record});
+            }
+        }
+
+        internal async Task AddRecord(CowMessage<RecordPayload> missingRecord)
+        {
+            //Add subrecord lists to a record if this store contains any substores
+            if (SubStores != null)
+            {
+                foreach (var subStore in SubStores)
                 {
-                    _storageProvider.AddStoreObjects(Id,
-                        new List<StoreRecord> {updatedRecord.Payload.Record});
+                    missingRecord.Payload.Record.AddSubRecordList(subStore, missingRecord.Payload.Record.Id);
+                }
+            }
+
+            Add(missingRecord.Payload.Record, missingRecord.Payload.Project);
+
+            if (CoreSettings.Instance.LocalStorageAvailable && SaveToLocalDatabase && _storageProvider != null)
+            {
+                _storageProvider.AddStoreObjects(Id, new List<StoreRecord> { missingRecord.Payload.Record });
+            }
+
+            if (_toReceiveRecords != null && _toReceiveRecords.Any())
+            {
+                foreach (var receiveRecord in _toReceiveRecords)
+                {
+                    if (!receiveRecord.RecordId.Equals(missingRecord.Payload.Record.Id))
+                        continue;
+
+                    _toReceiveRecords.Remove(receiveRecord);
+
+                    //Check if removed is last to receive record from project id and start subsync or set synced for project
+                    if (!string.IsNullOrEmpty(receiveRecord.Project))
+                    {
+                        var projectRecordsToReceive = _toReceiveRecords.Count(r => r.Project.Equals(receiveRecord.Project)) - 1;
+
+                        if (projectRecordsToReceive == 0)
+                        {
+                            if (SubStores != null)
+                            {
+                                StartSubSync();
+                            }
+                            else
+                            {
+                                OnStoreSynced(receiveRecord.Project);
+                            }
+                        }
+                    }
+
+                    break;
+                }
+            }
+            
+            //All records received start subsync or set store to synced
+            if (!Synced && (_toReceiveRecords == null || !_toReceiveRecords.Any()))
+            {
+                if (SubStores != null)
+                {
+                    StartSubSync();
+                }
+                else
+                {
+                    OnStoreSynced();
                 }
             }
         }

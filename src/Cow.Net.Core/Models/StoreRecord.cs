@@ -32,7 +32,7 @@ namespace Cow.Net.Core.Models
         private bool _deleted;
         private long _updated;
         private bool? _newDeletedState;
-        private Dictionary<string, object> _data;
+        private ObservableDictionary<string, object> _data;
         private Dictionary<string, object> _dataChangedQueue;
         private Dictionary<string, object> _dataAddedQueue;
         private ObservableCollection<Delta> _deltas;
@@ -42,7 +42,7 @@ namespace Cow.Net.Core.Models
             
         }
 
-        public StoreRecord(string id = null, Dictionary<string, object> data = null)
+        public StoreRecord(string id = null, ObservableDictionary<string, object> data = null)
         {
             var now = TimeUtils.GetMillisencondsFrom1970();
             if (string.IsNullOrEmpty(id))
@@ -54,7 +54,7 @@ namespace Cow.Net.Core.Models
             Created = now;
         }
 
-        public StoreRecord(string id, string projectId, long created, bool deleted, long updated, bool dirty, Dictionary<string, object> data, ObservableCollection<Delta> deltas)
+        public StoreRecord(string id, string projectId, long created, bool deleted, long updated, bool dirty, ObservableDictionary<string, object> data, ObservableCollection<Delta> deltas)
         {
             Id = id;
             Identifier = projectId;
@@ -72,6 +72,9 @@ namespace Cow.Net.Core.Models
             get { return _id; }
             internal set
             {
+                if (_id == value)
+                    return;
+
                 _id = value;
                 OnPropertyChanged();
             }
@@ -83,6 +86,9 @@ namespace Cow.Net.Core.Models
             get { return _identifier; }
             internal set
             {
+                if (_identifier == value)
+                    return;
+
                 _identifier = value;
                 OnPropertyChanged();
             }
@@ -105,6 +111,9 @@ namespace Cow.Net.Core.Models
             get { return _dirty; }
             internal set
             {
+                if (_dirty == value)
+                    return;
+
                 _dirty = value;
                 OnPropertyChanged();
             }
@@ -116,6 +125,9 @@ namespace Cow.Net.Core.Models
             get { return _created; }
             internal set
             {
+                if (_created == value)
+                    return;
+
                 _created = value;
                 OnPropertyChanged();
             }
@@ -127,6 +139,9 @@ namespace Cow.Net.Core.Models
             get { return _deleted; }
             internal set
             {
+                if(_deleted == value)
+                    return;
+
                 _deleted = value;
                 OnPropertyChanged();
             }
@@ -138,6 +153,9 @@ namespace Cow.Net.Core.Models
             get { return _updated; }
             internal set
             {
+                if (_updated == value)
+                    return;
+
                 _updated = value;
                 OnPropertyChanged();
             }
@@ -145,14 +163,27 @@ namespace Cow.Net.Core.Models
 
         [JsonProperty("data")]
         [JsonConverter(typeof(DataConverter))]
-        public Dictionary<string, object> Data
+        public ObservableDictionary<string, object> Data
         {
-            get { return _data ?? (_data = new Dictionary<string, object>()); }
+            get { return _data ?? (Data = new ObservableDictionary<string, object>()); }
             internal set
             {
+                if(value == null)
+                    value = new ObservableDictionary<string, object>();
+
+                if (_data != null)
+                    _data.PropertyChanged -= DataPropertyChanged;
+
                 _data = value;
+                _data.PropertyChanged += DataPropertyChanged;
+
                 OnPropertyChanged();
             }
+        }
+
+        private void DataPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(e.PropertyName);
         }
 
         [JsonProperty("deltas")]
@@ -172,7 +203,23 @@ namespace Cow.Net.Core.Models
                 Created = record.Created;
 
             if (record.Data != null)
-                Data = record.Data;
+            {
+                foreach (var key in record.Data.Keys)
+                {
+                    if ((Data.ContainsKey(key) && (Data[key] != record.Data[key])) ||
+                        !Data.ContainsKey(key))
+                    {
+                        Data[key] = record.Data[key];
+                    }
+                }
+                foreach (var key in Data.Keys)
+                {
+                    if (!record.Data.ContainsKey(key))
+                    {
+                        Data.Remove(key);
+                    }
+                }
+            }
 
             if (Identifier != record.Identifier || (Identifier != null && record.Identifier != null && !Identifier.Equals(record.Identifier)))
                 Identifier = record.Identifier;
@@ -207,7 +254,7 @@ namespace Cow.Net.Core.Models
                 delta.UserId = userId;
 
             if(Deltas == null)
-                Deltas =new ObservableCollection<Delta>();
+                Deltas = new ObservableCollection<Delta>();
 
             Deltas.Add(delta);
         }
@@ -220,8 +267,11 @@ namespace Cow.Net.Core.Models
             if (Deltas == null)
                 Deltas = new ObservableCollection<Delta>();
 
-            if(!Data.ContainsKey(key))
-                throw new Exception("Property does not exist in record");
+            if (!Data.ContainsKey(key))
+            {
+                AddData(key, value);
+                return;
+            }
 
             if (_dataChangedQueue == null)
                 _dataChangedQueue = new Dictionary<string, object>();
@@ -282,7 +332,7 @@ namespace Cow.Net.Core.Models
                     foreach (var o in _dataChangedQueue)
                     {
                         if (newDeltaRecord.Data == null)
-                            newDeltaRecord.Data = new Dictionary<string, object>();
+                            newDeltaRecord.Data = new ObservableDictionary<string, object>();
 
                         newDeltaRecord.Data.Add(o.Key, o.Value);
                     }
@@ -300,7 +350,7 @@ namespace Cow.Net.Core.Models
                 foreach (var o in _dataAddedQueue)
                 {
                     if (Data == null)
-                        Data = new Dictionary<string, object>();
+                        Data = new ObservableDictionary<string, object>();
 
                     Data.Add(o.Key, o.Value);
                 }
@@ -311,7 +361,7 @@ namespace Cow.Net.Core.Models
                 foreach (var o in _dataChangedQueue)
                 {
                     if (Data == null)
-                        Data = new Dictionary<string, object>();
+                        Data = new ObservableDictionary<string, object>();
 
                     Data[o.Key] = o.Value;                   
                 }

@@ -8,14 +8,14 @@ namespace Cow.Net.Core.MessageHandlers
     {
         internal static void Handle(ConnectionInfo connectionInfo, string message, CowStoreManager storeManager)
         {
-            var missingRecords = JsonConvert.DeserializeObject<CowMessage<RecordPayload>>(message, CoreSettings.Instance.SerializerSettings);
+            var missingRecords = JsonConvert.DeserializeObject<CowMessage<RecordPayload>>(message, CoreSettings.Instance.SerializerSettingsIncoming);
             var storeId = missingRecords.Payload.SyncType.ToString();
             var store = storeManager.GetStoreById(storeId);
             
             if(store == null)
                 throw new Exception(string.Format("A store is not configured (correctly): {0}", storeId));
 
-            store.HandleMissingRecord(connectionInfo, missingRecords);
+            store.HandleRecord(missingRecords);
         }
     }
 }

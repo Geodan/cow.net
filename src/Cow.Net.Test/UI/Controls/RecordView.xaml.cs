@@ -44,17 +44,20 @@ namespace Cow.Net.test.UI.Controls
 
         private void SetDefaultInfo()
         {
-            TxtProjectName.Text = Record.Data == null || !Record.Data.Any() || !Record.Data.ContainsKey("name") ? Record.Id : Record.Data["name"].ToString();
-            TxtDeltas.Text = string.Format("deltas: {0}", Record.Deltas == null ? "0" : Record.Deltas.Count.ToString());
-
-            var created = Core.Utils.TimeUtils.GetDateTimeFrom1970Milliseconds(Record.Created).ToLocalTime();
-            TxtCreated.Text = string.Format("{0} {1}", created.ToShortDateString(), created.ToShortTimeString());
-
-            if (Record.Created != Record.Updated)
+            Dispatcher.Invoke(() =>
             {
-                var updated = Core.Utils.TimeUtils.GetDateTimeFrom1970Milliseconds(Record.Updated).ToLocalTime();
-                TxtUpdated.Text = string.Format("updated {0} {1}", updated.ToShortDateString(), updated.ToShortTimeString());
-            }
+                TxtProjectName.Text = Record.Data == null || !Record.Data.Any() || !Record.Data.ContainsKey("name") ? Record.Id : Record.Data["name"].ToString();
+                TxtDeltas.Text = string.Format("deltas: {0}", Record.Deltas == null ? "0" : Record.Deltas.Count.ToString());
+
+                var created = Core.Utils.TimeUtils.GetDateTimeFrom1970Milliseconds(Record.Created).ToLocalTime();
+                TxtCreated.Text = string.Format("{0} {1}", created.ToShortDateString(), created.ToShortTimeString());
+
+                if (Record.Created != Record.Updated)
+                {
+                    var updated = Core.Utils.TimeUtils.GetDateTimeFrom1970Milliseconds(Record.Updated).ToLocalTime();
+                    TxtUpdated.Text = string.Format("updated {0} {1}", updated.ToShortDateString(), updated.ToShortTimeString());
+                }
+            });
         }
 
         private void RecordPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

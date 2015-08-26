@@ -8,7 +8,7 @@ namespace Cow.Net.Core.MessageHandlers
     {
         internal static void Handle(string message, CowStoreManager storeManager)
         {
-            var wantedRecords = JsonConvert.DeserializeObject<CowMessage<WantedList>>(message, CoreSettings.Instance.SerializerSettings);
+            var wantedRecords = JsonConvert.DeserializeObject<CowMessage<WantedList>>(message, CoreSettings.Instance.SerializerSettingsIncoming);
             var storeId = wantedRecords.Payload.SyncType.ToString();
             var store = storeManager.GetStoreById(storeId);
 

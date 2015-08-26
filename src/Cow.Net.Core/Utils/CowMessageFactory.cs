@@ -18,7 +18,6 @@ namespace Cow.Net.Core.Utils
         internal static CowMessage<DictionaryPayload> CreateSyncMessage(ConnectionInfo connectionInfo, SyncType syncType, IEnumerable<StoreRecord> storeObjects, string projectId = null)
         {
             var objectToSync = string.IsNullOrEmpty(projectId) ? storeObjects : storeObjects.Where(so => so.Identifier.Equals(projectId));
-
             var sendList = objectToSync.Select(storeObject => new Dictionary<string, object>
             {
                 {"_id", storeObject.Id}, 

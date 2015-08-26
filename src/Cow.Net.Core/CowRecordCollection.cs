@@ -56,12 +56,7 @@ namespace Cow.Net.Core
 
             foreach (var sendRecord in newListRecords)
             {
-                StoreRecord foundRecord = null;
-                if (Records.Any(record => sendRecord.Id.Equals(record.Id)))
-                {
-                    foundRecord = sendRecord;
-                }
-
+                var foundRecord = Records.FirstOrDefault(record => sendRecord.Id.Equals(record.Id));
                 if(foundRecord == null || foundRecord.Updated < sendRecord.Updated)
                     requestList.Add(sendRecord);
 
@@ -69,8 +64,7 @@ namespace Cow.Net.Core
                 {
                     if(string.IsNullOrEmpty(projectId) || foundRecord.Identifier.Equals(projectId))
                         pushList.Add(foundRecord);
-                }
-                    
+                }                    
             }
 
             pushList.AddRange(from record in Records let found = newListRecords.Any(storeRecord => storeRecord.Id.Equals(record.Id)) where !found select record);

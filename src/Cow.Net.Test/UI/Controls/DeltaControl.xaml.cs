@@ -27,12 +27,12 @@ namespace Cow.Net.test.UI.Controls
             TxtDeleted.Text = delta.Deleted.ToString();
             if (delta.Data != null)
             {
-                foreach (var o in delta.Data)
-                {                    
+                foreach (var o in delta.Data.Keys)
+                {                                        
                     var foreground = new SolidColorBrush(Color.FromArgb(255, 198, 198, 198));
-                    var title = new TextBlock { Text = o.Key, Foreground = foreground, Margin = new Thickness(0,5,0,0)};
+                    var title = new TextBlock { Text = o, Foreground = foreground, Margin = new Thickness(0,5,0,0)};
                     DataStack.Children.Add(title);
-                    var data = new TextBox { Text = o.Value.ToString(), IsEnabled = false, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 7) };
+                    var data = new TextBox { Text = delta.Data[o].ToString(), IsEnabled = false, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 7) };
                     DataStack.Children.Add(data);
                 }
             }

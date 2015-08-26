@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Cow.Net.Core.Utils;
 using Newtonsoft.Json;
 
@@ -17,7 +18,7 @@ namespace Cow.Net.Core.Models
         public bool Deleted { get; set; }
 
         [JsonProperty("data")]
-        public Dictionary<string, object> Data { get; set; }
+        public ObservableDictionary<string, object> Data { get; set; }
 
         public Delta(){ }
 

@@ -76,12 +76,8 @@ namespace Cow.Net.Core
             set
             {
                 CoreSettings.Instance.CurrentUser = value;
-
-                if (_peer == null)
-                    return;
-
-                _peer.UpdateData("userid", value.Id);
-                _peer.Sync();
+                OnPropertyChanged();
+                UpdatePeerUserId(value.Id);
             }             
         }
 
@@ -94,13 +90,27 @@ namespace Cow.Net.Core
             set
             {
                 _activeProject = value;
-
-                if (_peer == null)
-                    return;
-
-                _peer.UpdateData("activeproject", value.Id);
-                _peer.Sync();
+                OnPropertyChanged();
+                UpdateActiveProject(value.Id);
             }
+        }
+
+        private void UpdateActiveProject(string activeProjectId)
+        {
+            if (_peer == null)
+                return;
+
+            _peer.UpdateData("activeproject", activeProjectId);
+            _peer.Sync();  
+        }
+
+        private void UpdatePeerUserId(string userId)
+        {
+            if (_peer == null)
+                return;
+
+            _peer.UpdateData("userid", userId);
+            _peer.Sync();  
         }
 
         /// <summary>
@@ -180,7 +190,8 @@ namespace Cow.Net.Core
         {
             if (Connected)
             {
-                var jsonString = JsonSerialize(CowMessageFactory.CreateSyncMessage(ConnectionInfo, ((CowStore) sender).SyncType,((CowStore) sender).Records, identifier));
+                var msg = CowMessageFactory.CreateSyncMessage(ConnectionInfo, ((CowStore) sender).SyncType, ((CowStore) sender).Records, identifier);
+                var jsonString = JsonSerialize(msg);
                 Send(jsonString);
             }
         }
@@ -214,7 +225,7 @@ namespace Cow.Net.Core
 
         private string JsonSerialize(CowMessage<DictionaryPayload> message)
         {
-            return JsonConvert.SerializeObject(message, Formatting.None, CoreSettings.Instance.SerializerSettings);
+            return JsonConvert.SerializeObject(message, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing);
         }
          
         private void SetupDatabase(IStorageProvider storageProvider)
@@ -335,6 +346,11 @@ namespace Cow.Net.Core
             OnCowConnectionInfoReceived(ConnectionInfo);
             _peer = DefaultRecords.CreatePeerRecord(ConnectionInfo, Config.IsAlphaPeer, User, ActiveProject);
             Config.CowStoreManager.GetPeerStore().Add(_peer);
+
+            if(_activeProject != null)
+                UpdateActiveProject(_activeProject.Id);
+            if(CoreSettings.Instance.CurrentUser != null)
+                UpdatePeerUserId(CoreSettings.Instance.CurrentUser.Id);
 
             SyncStoreWithPeers();                      
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -9,7 +10,7 @@ namespace Cow.Net.Core.Utils
     {
         public override IDictionary<string, object> Create(Type objectType)
         {
-            return new Dictionary<string, object>();
+            return new ObservableDictionary<string, object>();
         }
 
         public override bool CanConvert(Type objectType)

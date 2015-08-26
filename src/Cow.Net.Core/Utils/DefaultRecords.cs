@@ -11,7 +11,7 @@ namespace Cow.Net.Core.Utils
             {
                 Id = connectionInfo.PeerId,
                 Created = TimeUtils.GetMillisencondsFrom1970(),
-                Data = null,
+                Data = new ObservableDictionary<string, object>(),
                 Deleted = false,
                 Deltas = new ObservableCollection<Delta>(),
                 Updated = TimeUtils.GetMillisencondsFrom1970(),

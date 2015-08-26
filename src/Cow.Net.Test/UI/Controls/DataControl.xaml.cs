@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows.Controls;
@@ -59,7 +60,7 @@ namespace Cow.Net.test.UI.Controls
                     bool bOut;
                     return bool.TryParse(text, out bOut) && bOut;
                 case DataType.DICTIONARY:
-                    return JsonConvert.DeserializeObject<Dictionary<string, object>>(text, new DataConverter());
+                    return JsonConvert.DeserializeObject<ObservableDictionary<string, object>>(text, new DataConverter());
                 case DataType.ARRAY:
                     return JsonConvert.DeserializeObject<IList>(text);
                 case DataType.DOUBLE:
@@ -124,7 +125,7 @@ namespace Cow.Net.test.UI.Controls
                     TxtValue.Text = value.ToString();
                     break;
                 case DataType.UNKNOWN:
-                    TxtValue.Text = value.ToString();
+                    TxtValue.Text = value == null ? "" : value.ToString();
                     break;
             }
         }
