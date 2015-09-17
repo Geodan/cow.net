@@ -188,6 +188,8 @@ namespace Cow.Net.Core.Utils
             DictionaryEntry entry;
             var index = GetIndexAndEntryForKey(key, out entry);
             FireEntryAddedNotifications(entry, index);
+
+            OnPropertyChanged(key.ToString());
         }
 
         private void DoClearEntries()
@@ -268,10 +270,6 @@ namespace Cow.Net.Core.Utils
             if (Count != _countCache)
             {
                 _countCache = Count;
-                OnPropertyChanged("Count");
-                OnPropertyChanged("Item[]");
-                OnPropertyChanged("Keys");
-                OnPropertyChanged("Values");
             }
         }
 
@@ -456,7 +454,7 @@ namespace Cow.Net.Core.Utils
             remove { CollectionChanged -= value; }
         }
 
-        protected virtual event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         //event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
         //{

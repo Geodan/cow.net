@@ -315,6 +315,9 @@ namespace Cow.Net.Core
         //ToDo: move to record + should be recursive, every record can have subrecords
         internal bool HasNonOutdatedSubRecords(IStorageProvider storageProvider, StoreRecord storeRecord, long maxDataAge)
         {
+            if (storeRecord.SubRecordCollection == null)
+                return true;
+
             foreach (var rc in storeRecord.SubRecordCollection)
             {
                 var hasNonOutdatedSubRecods = storageProvider.HasNonOutdatedLinkedStoreRecords(rc.Key, storeRecord.Identifier, maxDataAge);

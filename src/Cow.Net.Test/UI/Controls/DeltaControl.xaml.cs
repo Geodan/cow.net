@@ -32,7 +32,9 @@ namespace Cow.Net.test.UI.Controls
                     var foreground = new SolidColorBrush(Color.FromArgb(255, 198, 198, 198));
                     var title = new TextBlock { Text = o, Foreground = foreground, Margin = new Thickness(0,5,0,0)};
                     DataStack.Children.Add(title);
-                    var data = new TextBox { Text = delta.Data[o].ToString(), IsEnabled = false, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 7) };
+
+                    var d = !delta.Data.ContainsKey(o) ? delta.Data[o] == null ? "" : delta.Data[o].ToString() : "";
+                    var data = new TextBox { Text = d, IsEnabled = false, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 5, 0, 7) };
                     DataStack.Children.Add(data);
                 }
             }

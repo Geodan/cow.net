@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using Cow.Net.Core.Utils;
@@ -206,11 +207,15 @@ namespace Cow.Net.Core.Models
             {
                 foreach (var key in record.Data.Keys)
                 {
-                    if ((Data.ContainsKey(key) && (Data[key] != record.Data[key])) ||
-                        !Data.ContainsKey(key))
+                    if (record.Data[key] == null || !Data.ContainsKey(key) || Data[key] == null ||
+                        !Data[key].ToString().Equals(record.Data[key].ToString()))
                     {
-                        Data[key] = record.Data[key];
-                    }
+                        var result = record.Data[key] ?? "";
+                        if(Data.ContainsKey(key))
+                            Data[key] = result;
+                        else
+                            Data.Add(key, result);                        
+                    }                
                 }
                 foreach (var key in Data.Keys)
                 {

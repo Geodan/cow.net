@@ -65,6 +65,9 @@ namespace Cow.Net.Core
         {
             Config = config;
             CoreSettings.Instance.SynchronizationContext = Config.SynchronizationContext;
+
+            _peer = DefaultRecords.CreatePeerRecord("0", Config.IsAlphaPeer, User, ActiveProject);            
+            Config.CowStoreManager.GetPeerStore().Add(_peer);
         }
 
         /// <summary>
@@ -90,8 +93,8 @@ namespace Cow.Net.Core
             set
             {
                 _activeProject = value;
-                OnPropertyChanged();
                 UpdateActiveProject(value.Id);
+                OnPropertyChanged();                
             }
         }
 
@@ -343,9 +346,9 @@ namespace Cow.Net.Core
             if(CheckCowServerConnection(ConnectionInfo))
                 return;
 
+            _peer.Id = ConnectionInfo.PeerId;
+
             OnCowConnectionInfoReceived(ConnectionInfo);
-            _peer = DefaultRecords.CreatePeerRecord(ConnectionInfo, Config.IsAlphaPeer, User, ActiveProject);
-            Config.CowStoreManager.GetPeerStore().Add(_peer);
 
             if(_activeProject != null)
                 UpdateActiveProject(_activeProject.Id);

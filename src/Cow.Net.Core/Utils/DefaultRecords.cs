@@ -5,11 +5,11 @@ namespace Cow.Net.Core.Utils
 {
     internal class DefaultRecords
     {
-        internal static StoreRecord CreatePeerRecord(ConnectionInfo connectionInfo, bool isAlphaPeer, StoreRecord user, StoreRecord activeProject)
+        internal static StoreRecord CreatePeerRecord(string peerId, bool isAlphaPeer, StoreRecord user, StoreRecord activeProject)
         {
             var record = new StoreRecord
             {
-                Id = connectionInfo.PeerId,
+                Id = peerId,
                 Created = TimeUtils.GetMillisencondsFrom1970(),
                 Data = new ObservableDictionary<string, object>(),
                 Deleted = false,
