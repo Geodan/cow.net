@@ -87,6 +87,8 @@ namespace Cow.Net.Core
         /// <param name="record"></param>
         public void Add(StoreRecord record)
         {
+            AddSubrecordList(record);
+
             if (IsLinkedStore)
             {
                 record.Identifier = LinkedStoreIdentifier;
@@ -266,6 +268,15 @@ namespace Cow.Net.Core
             }
         }
 
+        internal void AddSubrecordList(StoreRecord record)
+        {
+            if (SubStores == null) return;
+            foreach (var subStore in SubStores)
+            {
+                record.AddSubRecordList(subStore, record.Id);
+            }
+        }
+
         internal void LoadFromStorage(IStorageProvider storageProvider, TimeSpan maxDataAge)
         {
             if (!CoreSettings.Instance.LocalStorageAvailable || !SaveToLocalDatabase)
@@ -274,17 +285,6 @@ namespace Cow.Net.Core
             var records = storageProvider.GetStoreRecords(Id);
             var maxDiff = maxDataAge.TotalMilliseconds;
             var now = TimeUtils.GetMillisencondsFrom1970();
-            
-            if (SubStores != null)
-            {
-                foreach (var storeRecord in records)
-                {
-                    foreach (var subStore in SubStores)
-                    {
-                        storeRecord.AddSubRecordList(subStore, storeRecord.Id);
-                    }
-                }
-            }
 
             var toDelete = records.Where(r => now - r.Updated > maxDiff).ToList();
             if (toDelete.Any())
@@ -299,6 +299,11 @@ namespace Cow.Net.Core
 
                 storageProvider.RemoveObjects(Id, toDelete);
                 records = storageProvider.GetStoreRecords(Id);
+            }
+
+            foreach (var storeRecord in records)
+            {
+                AddSubrecordList(storeRecord);
             }
 
             AddRange(records);

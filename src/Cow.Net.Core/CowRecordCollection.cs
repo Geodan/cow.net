@@ -87,6 +87,7 @@ namespace Cow.Net.Core
             }
 
             _records.AddRange(records);
+
             OnCollectionChanged(records, new List<StoreRecord>());
         }
 
