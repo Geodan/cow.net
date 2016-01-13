@@ -67,12 +67,12 @@
   <Style x:Key="TextBlockStyle" TargetType="TextBlock">
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="FontSize" Value="13.333" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
   </Style>
 
   <!-- *********************************  Label Style  ********************************* -->
   <Style x:Key="LabelStyle" TargetType="{x:Type Label}">
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="FontSize" Value="13.333" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="IsTabStop" Value="False" />
@@ -284,7 +284,7 @@
 
   <!-- *********************************  RepeatButton Style  ********************************* -->
   <Style x:Key="RepeatButtonStyle" TargetType="{x:Type RepeatButton}">
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="FontSize" Value="14.667" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="Padding" Value="10,0,10,2" />
@@ -474,7 +474,7 @@
 
   <!-- ********************************** PasswordBox Style **********************************-->
   <Style x:Key="PasswordBoxStyle" TargetType="{x:Type PasswordBox}">
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="FontSize" Value="13.333" />
     <Setter Property="Foreground" Value="{StaticResource PasswordBoxForegroundBrush}" />
     <Setter Property="Background" Value="{StaticResource TextBoxBackgroundBrush}" />
@@ -528,7 +528,7 @@
   <!-- *********************************  ToolTip Style  ********************************* -->
   <Style x:Key="{x:Type ToolTip}" TargetType="ToolTip">
     <Setter Property="OverridesDefaultStyle" Value="true" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="FontSize" Value="14.667" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="Background" Value="{StaticResource TooltipBackgroundBrush}" />
@@ -728,7 +728,7 @@
 
   <!-- *********************************  Expander Style  ********************************* -->
   <Style x:Key="ExpanderStyle" TargetType="{x:Type Expander}">
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="FontSize" Value="14.667" />
     <Setter Property="Background" Value="{StaticResource ExpanderBackgroundBrush}" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
@@ -775,7 +775,7 @@
 
   <!-- *********************************  ToggleButton Style  ********************************* -->
   <Style x:Key="ToggleButtonStyle" TargetType="{x:Type ToggleButton}">
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="FontSize" Value="14.667" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="Padding" Value="10,0,10,2" />
@@ -892,7 +892,7 @@
   <!-- *********************************  GroupBox Style  ********************************* -->
   <BorderGapMaskConverter x:Key="BorderGapMaskConverter" />
   <Style x:Key="GroupBoxStyle" TargetType="{x:Type GroupBox}">
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="FontSize" Value="14.667" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="BorderBrush" Value="{StaticResource GroupBoxBorderBrush}" />

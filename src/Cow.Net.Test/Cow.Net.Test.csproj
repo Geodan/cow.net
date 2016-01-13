@@ -224,6 +224,10 @@
       <Project>{f55aa3c8-ae24-4d8d-8f2e-286c139d3bc8}</Project>
       <Name>Cow.Net.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Cow.Net.Socket.Net45\Cow.Net.Socket.Net45.csproj">
+      <Project>{adbb47e7-4033-4983-bc04-740d84ea38e7}</Project>
+      <Name>Cow.Net.Socket.Net45</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cow.Net.SQLiteStorageProvider.Core\Cow.Net.SQLiteStorageProvider.Core.csproj">
       <Project>{796960EC-4E54-4E36-83B4-C62A3DEB7777}</Project>
       <Name>Cow.Net.SQLiteStorageProvider.Core</Name>

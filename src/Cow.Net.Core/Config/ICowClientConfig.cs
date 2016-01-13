@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Cow.Net.Core.Socket;
 using Cow.Net.Core.Storage;
 
 namespace Cow.Net.Core.Config
@@ -12,6 +13,7 @@ namespace Cow.Net.Core.Config
         TimeSpan MaxDataAge { get; set; }
         CowStoreManager CowStoreManager { get; set; }
         IStorageProvider StorageProvider { get; set; }
+        IWebSocketConnectionProvider WebSocketConnectionProvider { get; set; }
         SynchronizationContext SynchronizationContext { get; set; }
     }
 }

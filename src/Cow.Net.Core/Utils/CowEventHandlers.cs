@@ -25,7 +25,7 @@ namespace Cow.Net.Core.Utils
 
         //Other
         public delegate void CommandReceivedHandler(object sender, CowMessage<CommandPayload> commandMessage);
-        public delegate void CowSocketMessageReceivedHandler(object sender, WebSocketSharp.MessageEventArgs message);        
+        public delegate void CowSocketMessageReceivedHandler(object sender, string message);        
         public delegate void CowErrorHandler(object sender, Exception e);
 
         //Collection

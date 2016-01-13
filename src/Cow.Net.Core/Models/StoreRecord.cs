@@ -110,7 +110,7 @@ namespace Cow.Net.Core.Models
         public bool Dirty
         {
             get { return _dirty; }
-            internal set
+            set
             {
                 if (_dirty == value)
                     return;
@@ -159,6 +159,21 @@ namespace Cow.Net.Core.Models
 
                 _updated = value;
                 OnPropertyChanged();
+            }
+        }
+
+        //ToDo: Timestamp deprecated remove property when javascript timestamp is removed
+        [JsonProperty("timestamp")]
+        public long TimeStamp
+        {
+            get { return _updated; }
+            internal set
+            {
+                if (_updated == value)
+                    return;
+
+                _updated = value;
+                OnPropertyChanged("updated");
             }
         }
 

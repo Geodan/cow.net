@@ -26,6 +26,8 @@ namespace Cow.Net.test
         public void LoadCurrentSettings()
         {
             Server = Properties.Settings.Default.server;
+            Port = Properties.Settings.Default.port;
+            Endpoint = Properties.Settings.Default.endpoint;
             ServerKey = Properties.Settings.Default.serverKey;
             DatabaseLocation = Properties.Settings.Default.databaseLocation;
             IsAlpha = Properties.Settings.Default.isAlpha;
@@ -39,6 +41,30 @@ namespace Cow.Net.test
             {
                 _server = value;
                 Properties.Settings.Default.server = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int _port;
+        public int Port
+        {
+            get { return _port; }
+            set
+            {
+                _port = value;
+                Properties.Settings.Default.port = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private string _endpoint;
+        public string Endpoint
+        {
+            get { return _endpoint; }
+            set
+            {
+                _endpoint = value;
+                Properties.Settings.Default.endpoint = value;
                 OnPropertyChanged();
             }
         }

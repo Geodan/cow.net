@@ -383,7 +383,7 @@
   <Style x:Key="ComboBoxEditableTextBoxStyle" TargetType="{x:Type TextBox}">
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="OverridesDefaultStyle" Value="true" />
     <Setter Property="AllowDrop" Value="true" />
     <Setter Property="MinWidth" Value="0" />
@@ -506,7 +506,7 @@
     <Setter Property="Padding" Value="6,1,6,3" />
     <Setter Property="Margin" Value="0" />
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="MinHeight" Value="30" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="Background" Value="{StaticResource TransparentBrush}" />
@@ -635,7 +635,7 @@
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="Background" Value="{StaticResource TextBoxBackgroundBrush}" />
     <Setter Property="BorderBrush" Value="{StaticResource TextBoxBorderBrush}" />
     <Setter Property="MinHeight" Value="30" />

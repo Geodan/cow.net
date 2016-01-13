@@ -189,7 +189,7 @@
   <!-- *********************************  ComboBoxToggleButton Style   ********************************* -->
   <Style x:Key="ComboBoxToggleButtonStyle" TargetType="ToggleButton">
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="BorderBrush" Value="{StaticResource ComboBoxToggleButtonBorderBrush}" />
     <Setter Property="Background" Value="{StaticResource ComboBoxToggleButtonBackgroundBrush}"/>
@@ -272,7 +272,7 @@
   <!-- *********************************  ComboBoxItem Style  ********************************* -->
   <Style x:Key="ComboBoxItemStyle" TargetType="ComboBoxItem">
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="MinHeight" Value="30" />
     <Setter Property="Padding" Value="6,0" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
@@ -381,7 +381,7 @@
     <Setter Property="Background" Value="{StaticResource TransparentBrush}" />
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="MinHeight" Value="30" />
     <Setter Property="Padding" Value="6,2" />
     <Setter Property="Margin" Value="0" />
@@ -514,7 +514,7 @@
   <Style x:Key="CheckBoxStyle" TargetType="CheckBox">
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Padding" Value="6,0,0,0" />
@@ -605,7 +605,7 @@
   <Style x:Key="RadioButtonStyle" TargetType="RadioButton">
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="HorizontalContentAlignment" Value="Left" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="Padding" Value="6,0,0,0" />
@@ -691,7 +691,7 @@
   <Style x:Key="ButtonStyle" TargetType="Button">
     <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}" />
     <Setter Property="FontSize" Value="14.667" />
-    <Setter Property="FontFamily" Value="Segoe 360" />
+    <Setter Property="FontFamily" Value="Segoe UI" />
     <Setter Property="Padding" Value="10,0,10,2" />
     <Setter Property="MinHeight" Value="30" />
     <Setter Property="MinWidth" Value="30" />

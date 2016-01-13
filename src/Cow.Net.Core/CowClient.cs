@@ -7,13 +7,13 @@ using System.Runtime.CompilerServices;
 using cow.core.Annotations;
 using Cow.Net.Core.Config;
 using Cow.Net.Core.Exceptions;
+using Cow.Net.Core.Extensions;
 using Cow.Net.Core.MessageHandlers;
 using Cow.Net.Core.Models;
 using Cow.Net.Core.Storage;
 using Cow.Net.Core.Utils;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WebSocketSharp;
 using Action = Cow.Net.Core.Models.Action;
 
 namespace Cow.Net.Core
@@ -35,9 +35,8 @@ namespace Cow.Net.Core
                         
         private ConnectionInfo _connectionInfo;
         private bool _connected;
-        private WebSocket _socketClient;
         private bool _initialized;
-        private StoreRecord _peer;
+        private readonly StoreRecord _peer;
         private StoreRecord _activeProject;
 
         public ConnectionInfo ConnectionInfo
@@ -64,6 +63,13 @@ namespace Cow.Net.Core
         public CowClient(ICowClientConfig config)
         {
             Config = config;
+
+            if(Config.WebSocketConnectionProvider == null)
+                throw new Exception("Please provide a IWebSocketConnectionProvider");
+
+            if(Config.CowStoreManager == null)
+                throw new Exception("Please provide a CowStoreManager");
+
             CoreSettings.Instance.SynchronizationContext = Config.SynchronizationContext;
 
             _peer = DefaultRecords.CreatePeerRecord("0", Config.IsAlphaPeer, User, ActiveProject);            
@@ -117,7 +123,7 @@ namespace Cow.Net.Core
         }
 
         /// <summary>
-        /// Start the client (loading from local storage) Call Connect to 
+        /// Start the client (loading from local storage) Call OpenAsync to 
         /// start syncing with other peers
         /// </summary>
         public void StartClient()
@@ -130,28 +136,37 @@ namespace Cow.Net.Core
         }
 
         /// <summary>
-        /// Connect to the websocket and start syncing
+        /// OpenAsync to the websocket and start syncing
         /// </summary>
-        /// <param name="ip"></param>
+        /// <param name="host"></param>
+        /// <param name="endpoint"></param>
         /// <param name="protocols"></param>
-        public void Connect(string ip, string[] protocols)
+        /// <param name="port"></param>
+        public async void Connect(string host, int port, string[] endpoint, string subProtocol)
         {
             if (!_initialized)
                 StartClient();
 
-            SetupSocketClient(ip, protocols);
-            _socketClient.ConnectAsync();
+            SetupSocketClient();
+            try
+            {
+                await Config.WebSocketConnectionProvider.OpenAsync(host, port, endpoint, subProtocol);
+            }
+            catch (Exception e)
+            {
+                SocketClientError(Config.WebSocketConnectionProvider, new Exception(e.Message));
+            }            
         }
 
         /// <summary>
-        /// Disconnect from the websocket
+        /// CloseAsync from the websocket
         /// </summary>
         public void Disconnect()
         {
-            if (_socketClient == null || !Connected)
+            if (!Connected)
                 return;
 
-            _socketClient.CloseAsync();
+            Config.WebSocketConnectionProvider.CloseAsync();
             ConnectionInfo.Reset();
             var stores = Config.CowStoreManager.GetAllStores();
             foreach (var cowStore in stores)
@@ -241,15 +256,6 @@ namespace Cow.Net.Core
             }
         }
 
-        private void SetupSocketClient(string address, string[] protocols)
-        {
-            _socketClient = new WebSocket(address, protocols ?? new[] { "connect" });
-            _socketClient.OnError   += SocketClientOnError;
-            _socketClient.OnOpen    += SocketClientOnOpen;
-            _socketClient.OnClose   += SocketClientOnClose;
-            _socketClient.OnMessage += SocketClientOnMessage;
-        }
-
         private void LoadFromStorage()
         {
             if (!CoreSettings.Instance.LocalStorageAvailable)
@@ -269,14 +275,8 @@ namespace Cow.Net.Core
             }
         }
 
-        private void HandleReceivedMessage(string message)
+        private void HandleReceivedMessage(dynamic d, string message)
         {
-            dynamic d = JObject.Parse(message);
-            
-            //Ignore broadcast to self
-            if (d["sender"] != null && d["sender"].ToString().Equals(ConnectionInfo.PeerId) && (d["target"] == null || string.IsNullOrEmpty(d["target"].ToString())))
-                return;
-
             // ReSharper disable once RedundantAssignment
             var action = Action.Unknown;
             if (d["action"] == null || !Enum.TryParse((string)d["action"], out action))
@@ -330,14 +330,14 @@ namespace Cow.Net.Core
                 //a new peer has arrived and gives a list of its records
                 case Action.newList:
                     if (AmIAlpha())                    
-                        NewListHandler.Handle(ConnectionInfo.PeerId, message, Config.CowStoreManager, _socketClient);                    
+                        NewListHandler.Handle(ConnectionInfo.PeerId, message, Config.CowStoreManager, Config.WebSocketConnectionProvider);                    
                     break;
             }
         }
 
         private void Send(string json)
         {
-            _socketClient.Send(json);   
+            Config.WebSocketConnectionProvider.SendAsync(json);
         }
 
         private void HandleNewConnection(string message)
@@ -415,37 +415,37 @@ namespace Cow.Net.Core
                 Disconnect();
 
             return error;
-        }        
+        }
 
         #region events
 
-        //Bubble socket events up
-        private void SocketClientOnMessage(object sender, MessageEventArgs e)
-        {            
-            if(!Connected)
-                Connected = true;
 
-            HandleReceivedMessage(e.Data);
-            OnCowSocketMessageReceived(e);
+        private void SetupSocketClient()
+        {
+            //address, protocols ?? new[] { "connect" }
+            Config.WebSocketConnectionProvider.SocketOpened += SocketClientOpened;
+            Config.WebSocketConnectionProvider.SocketClosed += SocketClientClosed;
+            Config.WebSocketConnectionProvider.SocketError += SocketClientError;
+            Config.WebSocketConnectionProvider.SocketMessageReceived += SocketClientMessageReceived;
         }
 
-        private void OnCowSocketMessageReceived(MessageEventArgs message)
-        {            
-            var handler = CowSocketMessageReceived;
+        private void SocketClientError(object sender, Exception obj)
+        {
+            var handler = CowSocketConnectionError;
             if (handler == null)
                 return;
-
+            
             if (CoreSettings.Instance.SynchronizationContext != null)
             {
-                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, message), null);
+                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, obj == null ? "" : obj.Message), null);
             }
             else
             {
-                handler(this, message);
+                handler(this, obj.Message);
             }
         }
 
-        private void SocketClientOnClose(object sender, CloseEventArgs e)
+        private void SocketClientClosed(object sender, string message)
         {
             Connected = false;
 
@@ -465,7 +465,7 @@ namespace Cow.Net.Core
             Connected = false;
         }
 
-        private void SocketClientOnOpen(object sender, EventArgs e)
+        private void SocketClientOpened(object sender)
         {
             Connected = true;
 
@@ -480,25 +480,40 @@ namespace Cow.Net.Core
             else
             {
                 handler(this);
-            }            
+            }
         }
 
-        private void SocketClientOnError(object sender, ErrorEventArgs e)
+        private void SocketClientMessageReceived(object sender, string message)
         {
-            var handler = CowSocketConnectionError;
+            if (!Connected || string.IsNullOrEmpty(message))
+                Connected = true;
+
+            dynamic d = JObject.Parse(message);
+
+            //Ignore broadcast to self
+            if (d["sender"] != null && d["sender"].ToString().Equals(ConnectionInfo.PeerId) && (d["target"] == null || string.IsNullOrEmpty(d["target"].ToString())))
+                return;
+
+            HandleReceivedMessage(d, message);
+            OnCowSocketMessageReceived(message);
+        }
+
+        private void OnCowSocketMessageReceived(string message)
+        {
+            var handler = CowSocketMessageReceived;
             if (handler == null)
                 return;
 
             if (CoreSettings.Instance.SynchronizationContext != null)
             {
-                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, e.Message), null);
+                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, message), null);
             }
             else
             {
-                handler(this, e.Message);
+                handler(this, message);
             }
         }
-
+     
         //Cow related events
         private void OnCowDatabaseError(string error)
         {

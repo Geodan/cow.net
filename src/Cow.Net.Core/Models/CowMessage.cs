@@ -1,8 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
-using Cow.Net.Core.Extensions;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Cow.Net.Core.Models
 {

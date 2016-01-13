@@ -21,7 +21,8 @@ namespace Cow.Net.Core.Utils
             var sendList = objectToSync.Select(storeObject => new Dictionary<string, object>
             {
                 {"_id", storeObject.Id}, 
-                {"updated", storeObject.Updated}, 
+                {"updated", storeObject.Updated},
+                {"timestamp", storeObject.Updated}, //timestamp deprecated, ToDo: remove
                 {"deleted", storeObject.Deleted},                
             }).ToList();
 

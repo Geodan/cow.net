@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Cow.Net.Core.Models;
+using Cow.Net.Core.Socket;
 using Cow.Net.Core.Utils;
 using Newtonsoft.Json;
-using WebSocketSharp;
 
 namespace Cow.Net.Core.MessageHandlers
 {
     internal class NewListHandler
     {
-        internal static void Handle(string peerId, string message, CowStoreManager storeManager, WebSocket socket)
+        internal static async void Handle(string peerId, string message, CowStoreManager storeManager, IWebSocketConnectionProvider socketProvider)
         {
             var newList = JsonConvert.DeserializeObject<CowMessage<NewListPayload>>(message, CoreSettings.Instance.SerializerSettingsIncoming);
             var store = storeManager.GetStoreById(newList.Payload.SyncType.ToString());
@@ -23,12 +23,12 @@ namespace Cow.Net.Core.MessageHandlers
 
             var syncMessage = CowMessageFactory.CreateSyncInfoMessage(newList.Payload.SyncType, pushRecords, requestRecords, newList.Payload.Project, peerId, newList.Sender);
 
-            socket.Send(JsonConvert.SerializeObject(syncMessage, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing));
+            await socketProvider.SendAsync(JsonConvert.SerializeObject(syncMessage, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing));
 
             //Wanted message
             var wantedMessage = CowMessageFactory.CreateWantedMessage(newList.Payload.SyncType, requestRecords, newList.Payload.Project, peerId, newList.Sender);
             if(requestRecords.Any())
-                socket.Send(JsonConvert.SerializeObject(wantedMessage, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing));
+                await socketProvider.SendAsync(JsonConvert.SerializeObject(wantedMessage, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing));
 
             pushRecords = string.IsNullOrEmpty(newList.Payload.Project) ? pushRecords : pushRecords.Where(so => so.Identifier.Equals(newList.Payload.Project)).ToList(); 
 
@@ -36,7 +36,7 @@ namespace Cow.Net.Core.MessageHandlers
             foreach (var storeRecord in pushRecords)
             {
                 var missingMessage = CowMessageFactory.CreateMissingRecordMessage(newList.Payload.SyncType, storeRecord, newList.Payload.Project, peerId, newList.Sender);
-                socket.Send(JsonConvert.SerializeObject(missingMessage, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing));
+                await socketProvider.SendAsync(JsonConvert.SerializeObject(missingMessage, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing));
             }           
         }
     }

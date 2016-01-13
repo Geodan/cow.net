@@ -11,13 +11,13 @@ namespace Cow.Net.test.UI.Controls
         {
             InitializeComponent();
             _client = cowClient;
-            _client.CowSocketMessageReceived += _client_CowSocketMessageReceived;
+            _client.CowSocketMessageReceived += _client_CowSocketMessageReceived1;
             TxtMessages.Text = "Websocket message log:";
         }
 
-        void _client_CowSocketMessageReceived(object sender, WebSocketSharp.MessageEventArgs message)
+        private void _client_CowSocketMessageReceived1(object sender, string message)
         {
-            TxtMessages.Text += string.Format("\n{0}: {1}", _count, message.Data);
+            TxtMessages.Text += $"\n{_count}: {message}";
             _count++;
         }
     }

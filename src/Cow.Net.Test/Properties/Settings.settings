@@ -14,5 +14,11 @@
     <Setting Name="serverKey" Type="System.String" Scope="User">
       <Value Profile="(Default)">eagle</Value>
     </Setting>
+    <Setting Name="port" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">443</Value>
+    </Setting>
+    <Setting Name="endpoint" Type="System.String" Scope="User">
+      <Value Profile="(Default)">eagle</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

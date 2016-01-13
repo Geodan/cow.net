@@ -32,18 +32,24 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />                
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>            
             <TextBlock Grid.Row="0" Grid.Column="0" Text="server" Margin="8,8,0,2" />
             <TextBox x:Name="TxtServer" Grid.Row="0" Grid.Column="1" Text="ws:eagle.nl" Margin="8,10,8,2" />
-            <TextBlock Grid.Row="1" Grid.Column="0" Text="key" Margin="8,0,0,2" />
-            <TextBox x:Name="TxtKey" Grid.Row="1" Grid.Column="1" Text="eagle" Margin="8,2,8,2" />
-            <TextBlock Grid.Row="2" Grid.Column="0" Text="database" Margin="8,0,0,2" />
-            <TextBox x:Name="TxtDatabase" Grid.Row="2" Grid.Column="1" Text="c:/cow.sql3" Margin="8,2,8,2" />
-            <TextBlock Grid.Row="3" Grid.Column="0" Text="alpha" Margin="8,0,0,2" />
-            <CheckBox x:Name="CbAlpha" Grid.Row="3" Grid.Column="1" Margin="2,2,0,-12" />
-            <Button Click="OnClick" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Height="28" Width="150" Margin="0,5,0,8" Content="start" VerticalAlignment="Bottom" />
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="port" Margin="8,0,0,2" />
+            <TextBox x:Name="TxtPort" Grid.Row="1" Grid.Column="1" Text="" Margin="8,2,8,2" />
+            <TextBlock Grid.Row="2" Grid.Column="0" Text="endpoint" Margin="8,0,0,2" />
+            <TextBox x:Name="TxtEndpoint" Grid.Row="2" Grid.Column="1" Text="" Margin="8,2,8,2" />
+            <TextBlock Grid.Row="3" Grid.Column="0" Text="key" Margin="8,0,0,2" />
+            <TextBox x:Name="TxtKey" Grid.Row="3" Grid.Column="1" Text="eagle" Margin="8,2,8,2" />
+            <TextBlock Grid.Row="4" Grid.Column="0" Text="database" Margin="8,0,0,2" />
+            <TextBox x:Name="TxtDatabase" Grid.Row="4" Grid.Column="1" Text="c:/cow.sql3" Margin="8,2,8,2" />
+            <TextBlock Grid.Row="5" Grid.Column="0" Text="alpha" Margin="8,0,0,2" />
+            <CheckBox x:Name="CbAlpha" Grid.Row="5" Grid.Column="1" Margin="2,2,0,-12" />
+            <Button Click="OnClick" Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Height="28" Width="150" Margin="0,5,0,8" Content="start" VerticalAlignment="Bottom" />
         </Grid>
     </Grid>
 </UserControl>

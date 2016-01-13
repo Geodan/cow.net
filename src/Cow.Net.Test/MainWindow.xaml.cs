@@ -6,6 +6,7 @@ using Cow.Net.Core;
 using Cow.Net.Core.Config.Default;
 using Cow.Net.Core.Models;
 using Cow.Net.Core.Utils;
+using Cow.Net.Socket.Net45;
 using Cow.Net.test.UI.Controls;
 
 namespace Cow.Net.test
@@ -67,7 +68,7 @@ namespace Cow.Net.test
         {
             var context = new DispatcherSynchronizationContext(Application.Current.Dispatcher);
             SynchronizationContext.SetSynchronizationContext(context);
-            _config = new DefaultConfig(CowSettings.Instance.ServerKey, CowSettings.Instance.IsAlpha, new SQLiteStorageProvider.Core.SQLiteStorageProvider(CowSettings.Instance.DatabaseLocation), context);     
+            _config = new DefaultConfig(CowSettings.Instance.ServerKey, CowSettings.Instance.IsAlpha, new SQLiteStorageProvider.Core.SQLiteStorageProvider(CowSettings.Instance.DatabaseLocation), new Net45WebSocketConnectionProvider(),  context);     
 
             _client = new CowClient(_config);            
             _client.PropertyChanged += ClientPropertyChanged;
@@ -107,7 +108,7 @@ namespace Cow.Net.test
         {
             if (!_client.Connected)
             {
-                _client.Connect(CowSettings.Instance.Server, null);
+                _client.Connect(CowSettings.Instance.Server, CowSettings.Instance.Port, new[] { CowSettings.Instance.Endpoint }, "connect");
             }
             else
             {
@@ -119,6 +120,7 @@ namespace Cow.Net.test
         private void BtnBackOnClick(object sender, RoutedEventArgs e)
         {
             _client.Disconnect();
+
             StartScreen.Visibility = Visibility.Visible;
             ControlGrid.Visibility = Visibility.Collapsed;
             TopGrid.Visibility = Visibility.Collapsed;

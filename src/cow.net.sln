@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cow.Net.Core", "Cow.Net.Core\Cow.Net.Core.csproj", "{F55AA3C8-AE24-4D8D-8F2E-286C139D3BC8}"
 EndProject
@@ -14,6 +14,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SQLite", "SQLite", "{781AA051-03CD-4A4D-9398-C695596DA153}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cow.Net.SQLiteStorageProvider.Core", "Cow.Net.SQLiteStorageProvider.Core\Cow.Net.SQLiteStorageProvider.Core.csproj", "{796960EC-4E54-4E36-83B4-C62A3DEB7777}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Socket", "Socket", "{73130830-6712-434D-A236-7B7B1A0BA8FF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cow.Net.Socket.Net45", "Cow.Net.Socket.Net45\Cow.Net.Socket.Net45.csproj", "{ADBB47E7-4033-4983-BC04-740D84EA38E7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,6 +41,10 @@ Global
 		{796960EC-4E54-4E36-83B4-C62A3DEB7777}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{796960EC-4E54-4E36-83B4-C62A3DEB7777}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{796960EC-4E54-4E36-83B4-C62A3DEB7777}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADBB47E7-4033-4983-BC04-740D84EA38E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADBB47E7-4033-4983-BC04-740D84EA38E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADBB47E7-4033-4983-BC04-740D84EA38E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADBB47E7-4033-4983-BC04-740D84EA38E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -45,5 +53,6 @@ Global
 		{624760B4-C672-4B8F-805F-B2DAEF85E2C3} = {781AA051-03CD-4A4D-9398-C695596DA153}
 		{781AA051-03CD-4A4D-9398-C695596DA153} = {34BDB477-CC4A-4ABF-B84A-A40D8F981664}
 		{796960EC-4E54-4E36-83B4-C62A3DEB7777} = {781AA051-03CD-4A4D-9398-C695596DA153}
+		{ADBB47E7-4033-4983-BC04-740D84EA38E7} = {73130830-6712-434D-A236-7B7B1A0BA8FF}
 	EndGlobalSection
 EndGlobal

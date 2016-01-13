@@ -377,7 +377,11 @@ namespace Cow.Net.Core
                 var record = Records.FirstOrDefault(i => i.Id.Equals(storeRecord.Identifier));
                 if (record == null)
                 {
-                    throw new Exception("Error Substore synced but found non connectable records on the parrent store");
+                    //throw new Exception("Error Substore synced but found non connectable records on the parrent store");
+
+                //ToDO: display message pr create a parent or delete stuff?
+                    return;
+
                 }
 
                 var subRecordCollections = record.SubRecordCollection;
