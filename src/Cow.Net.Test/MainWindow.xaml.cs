@@ -94,9 +94,9 @@ namespace Cow.Net.test
             _performance.Start();
         }
 
-        private void ClientCowCommandReceived(object sender, CowMessage<CommandPayload> commandMessage)
+        private void ClientCowCommandReceived(object sender, CommandPayload commandMessage)
         {
-            MessageBox.Show(string.Format("Non implemented command received: {0}", commandMessage.Action));
+            MessageBox.Show(string.Format("Non implemented command received: {0}", commandMessage.Command));
         }
 
         private void StartScreenOnStartClicked(object sender)

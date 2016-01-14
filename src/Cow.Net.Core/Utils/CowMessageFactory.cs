@@ -151,5 +151,16 @@ namespace Cow.Net.Core.Utils
                 Payload = payload
             };
         }
+
+        internal static CowMessage<CommandPayload> CreateCommandMessage(CommandPayload command, string sender, string target = null)
+        {
+            return new CowMessage<CommandPayload>
+            {
+                Sender = sender,
+                Target = target,
+                Action = Action.command,
+                Payload = command
+            };
+        }
     }
 }

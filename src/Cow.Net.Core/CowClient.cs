@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using cow.core.Annotations;
 using Cow.Net.Core.Config;
 using Cow.Net.Core.Exceptions;
-using Cow.Net.Core.Extensions;
 using Cow.Net.Core.MessageHandlers;
 using Cow.Net.Core.Models;
 using Cow.Net.Core.Storage;
@@ -31,7 +30,7 @@ namespace Cow.Net.Core
 
         public event CowEventHandlers.CowErrorHandler CowError;
 
-        public ICowClientConfig Config { get; private set; }
+        public ICowClientConfig Config { get; }
                         
         private ConnectionInfo _connectionInfo;
         private bool _connected;
@@ -140,7 +139,7 @@ namespace Cow.Net.Core
         /// </summary>
         /// <param name="host"></param>
         /// <param name="endpoint"></param>
-        /// <param name="protocols"></param>
+        /// <param name="subProtocol"></param>
         /// <param name="port"></param>
         public async void Connect(string host, int port, string[] endpoint, string subProtocol)
         {
@@ -245,7 +244,12 @@ namespace Cow.Net.Core
         {
             return JsonConvert.SerializeObject(message, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing);
         }
-         
+
+        private string JsonSerialize(CowMessage<CommandPayload> message)
+        {
+            return JsonConvert.SerializeObject(message, Formatting.None, CoreSettings.Instance.SerializerSettingsOutgoing);
+        }
+
         private void SetupDatabase(IStorageProvider storageProvider)
         {
             var stores = (from store in Config.CowStoreManager.GetAllStores() where store.SaveToLocalDatabase select store.Id).ToList();
@@ -333,6 +337,17 @@ namespace Cow.Net.Core
                         NewListHandler.Handle(ConnectionInfo.PeerId, message, Config.CowStoreManager, Config.WebSocketConnectionProvider);                    
                     break;
             }
+        }
+
+        /// <summary>
+        /// Send a custom command
+        /// </summary>
+        /// <param name="command">You custom CommandPayload</param>
+        /// <param name="target">PeerId of target, if not supplied command will be broadcasted</param>
+        public void SendCommand(CommandPayload command, string target = null)
+        {
+            var commandMessage = CowMessageFactory.CreateCommandMessage(command, ConnectionInfo.PeerId, target);
+            Config.WebSocketConnectionProvider.SendAsync(JsonSerialize(commandMessage));
         }
 
         private void Send(string json)
@@ -555,11 +570,11 @@ namespace Cow.Net.Core
 
             if (CoreSettings.Instance.SynchronizationContext != null)
             {
-                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, commandmessage), null);
+                CoreSettings.Instance.SynchronizationContext.Post(o => handler(this, commandmessage.Payload), null);
             }
             else
             {
-                handler(this, commandmessage);
+                handler(this, commandmessage.Payload);
             }
         }
 

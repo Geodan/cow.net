@@ -5,12 +5,9 @@ namespace Cow.Net.Core.Models
     public class CommandPayload : IPayload
     {
         [JsonProperty("command")]
-        public string Commando { get; set; }
+        public string Command { get; set; }
 
-        [JsonProperty("more")]
-        public string More { get; set; }
-
-        [JsonProperty("params")]
-        public string Parameters { get; set; }
+        [JsonProperty("data")]
+        public object Data { get; set; }
     }
 }

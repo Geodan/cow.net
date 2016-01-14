@@ -24,7 +24,7 @@ namespace Cow.Net.Core.Utils
         public delegate void RecordSyncToPeersRequested(object sender, StoreRecord records);        
 
         //Other
-        public delegate void CommandReceivedHandler(object sender, CowMessage<CommandPayload> commandMessage);
+        public delegate void CommandReceivedHandler(object sender, CommandPayload command);
         public delegate void CowSocketMessageReceivedHandler(object sender, string message);        
         public delegate void CowErrorHandler(object sender, Exception e);
 
