@@ -86,7 +86,7 @@ namespace Cow.Net.Core
                 CoreSettings.Instance.CurrentUser = value;
                 OnPropertyChanged();
                 UpdatePeerUserId(value.Id);
-            }             
+            }
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Cow.Net.Core
                 UpdateActiveProject(value.Id);
                 OnPropertyChanged();                
             }
-        }
+        } 
 
         private void UpdateActiveProject(string activeProjectId)
         {
@@ -346,6 +346,9 @@ namespace Cow.Net.Core
         /// <param name="target">PeerId of target, if not supplied command will be broadcasted</param>
         public void SendCommand(CommandPayload command, string target = null)
         {
+            if(string.IsNullOrEmpty(ConnectionInfo?.PeerId))
+                return;
+
             var commandMessage = CowMessageFactory.CreateCommandMessage(command, ConnectionInfo.PeerId, target);
             Config.WebSocketConnectionProvider.SendAsync(JsonSerialize(commandMessage));
         }
@@ -437,7 +440,6 @@ namespace Cow.Net.Core
 
         private void SetupSocketClient()
         {
-            //address, protocols ?? new[] { "connect" }
             Config.WebSocketConnectionProvider.SocketOpened += SocketClientOpened;
             Config.WebSocketConnectionProvider.SocketClosed += SocketClientClosed;
             Config.WebSocketConnectionProvider.SocketError += SocketClientError;

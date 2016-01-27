@@ -39,7 +39,7 @@ namespace Cow.Net.Core.Config.Default
             WebSocketConnectionProvider = webSocketConnectionProvider;
             IsAlphaPeer = isAlphaPeer;
             MaxClientServerTimeDifference = TimeSpan.FromMinutes(5);
-            MaxDataAge = TimeSpan.FromDays(90);
+            MaxDataAge = TimeSpan.FromDays(365);
             SynchronizationContext = synchronizationContext;
             SetupStores();
         }

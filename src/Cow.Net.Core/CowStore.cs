@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Cow.Net.Core.Models;
@@ -346,7 +347,7 @@ namespace Cow.Net.Core
                 SubStores = new List<CowStore>();
             }
 
-            store.IsSubStore = true;            
+            store.IsSubStore = true;
             store.CollectionChanged += SubStoreCollectionChanged;
             store.StoreSynced += SubStoreSynced;
 
@@ -378,10 +379,8 @@ namespace Cow.Net.Core
                 if (record == null)
                 {
                     //throw new Exception("Error Substore synced but found non connectable records on the parrent store");
-
-                //ToDO: display message pr create a parent or delete stuff?
-                    return;
-
+                    //ToDO: display message pr create a parent or delete stuff?
+                    continue;
                 }
 
                 var subRecordCollections = record.SubRecordCollection;
@@ -453,19 +452,19 @@ namespace Cow.Net.Core
         protected virtual void OnSyncRequested(string identifier = null)
         {
             var handler = SyncRequested;
-            if (handler != null) handler(this, identifier);
+            handler?.Invoke(this, identifier);
         }
 
         protected virtual void OnSendMissingRecordsRequested(string project, List<StoreRecord> records)
         {
             var handler = SendMissingRecordsRequested;
-            if (handler != null) handler(this, project, records);
+            handler?.Invoke(this, project, records);
         }
 
         protected virtual void OnRequestedRecordsRequested(string project, List<StoreRecord> records)
         {
             var handler = RequestedRecordsRequested;
-            if (handler != null) handler(this, project, records);
+            handler?.Invoke(this, project, records);
         }
     }
 }

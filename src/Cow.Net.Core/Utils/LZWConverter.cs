@@ -30,7 +30,7 @@ namespace Cow.Net.Core.Utils
             if (reader.TokenType == JsonToken.Null)
             {
                 if (!IsNullable(objectType))
-                    throw new Exception(string.Format("Cannot convert null value to {0}.", objectType));
+                    return null;
 
                 return null;
             }
@@ -43,12 +43,17 @@ namespace Cow.Net.Core.Utils
             }
             else
             {
-                throw new Exception(string.Format("Unexpected token parsing binary. Expected String or StartArray, got {0}.", reader.TokenType));
+                return null;
             }
 
-            var payload = JsonConvert.DeserializeObject(data, objectType);
-
-            return payload;
+            try
+            {
+                return JsonConvert.DeserializeObject(data, objectType);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         public static T Cast<T>(object o)

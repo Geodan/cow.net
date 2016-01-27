@@ -296,7 +296,9 @@ namespace Cow.Net.Core.Models
             if (_dataChangedQueue == null)
                 _dataChangedQueue = new Dictionary<string, object>();
 
-            if (JsonConvert.SerializeObject(Data[key]).Equals(JsonConvert.SerializeObject(value)))
+            var oldI = JsonConvert.SerializeObject(Data[key]);
+            var newI = JsonConvert.SerializeObject(value);
+            if (oldI.Equals(newI))
                 return;
 
             if (_dataChangedQueue.ContainsKey(key))
@@ -422,7 +424,12 @@ namespace Cow.Net.Core.Models
         protected virtual void OnSyncToPeersRequested(StoreRecord record)
         {
             var handler = SyncToPeersRequested;
-            if (handler != null) handler(this, record);
+            if (handler != null)
+                handler(this, record);
+            else
+            {
+                Dirty = true;
+            }
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
