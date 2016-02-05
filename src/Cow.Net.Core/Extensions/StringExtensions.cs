@@ -59,9 +59,6 @@ namespace Cow.Net.Core.Extensions
                 else if (k == dictionary.Count)
                     entry = w + w[0];
 
-                if(entry == null)
-                    continue;
-
                 decompressed.Append(entry);
                 dictionary.Add(dictionary.Count, w + entry[0]);
 
