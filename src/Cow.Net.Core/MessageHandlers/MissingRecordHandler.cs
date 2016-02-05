@@ -9,6 +9,9 @@ namespace Cow.Net.Core.MessageHandlers
         internal static void Handle(ConnectionInfo connectionInfo, string message, CowStoreManager storeManager)
         {
             var missingRecords = JsonConvert.DeserializeObject<CowMessage<RecordPayload>>(message, CoreSettings.Instance.SerializerSettingsIncoming);
+            if(missingRecords.Payload == null)
+                return;
+
             var storeId = missingRecords.Payload.SyncType.ToString();
             var store = storeManager.GetStoreById(storeId);
             
